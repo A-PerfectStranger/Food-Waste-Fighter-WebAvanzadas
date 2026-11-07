@@ -14,7 +14,7 @@ if (test.protocol !== 'mysql:' || !databaseName.endsWith('_test') ||
 const env = { ...process.env, NODE_ENV: 'test', DATABASE_URL: testUrl, TEST_DATABASE_URL: testUrl };
 for (const args of [
   ['prisma', 'migrate', 'deploy'],
-  ['vitest', 'run', 'tests/database.integration.test.js'],
+  ['vitest', 'run', 'tests/database.integration.test.js', 'tests/auth.integration.test.js'],
 ]) {
   const result = spawnSync('npx', ['--no-install', ...args], { env, stdio: 'inherit' });
   if (result.status !== 0) process.exit(result.status || 1);

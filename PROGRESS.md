@@ -2,8 +2,8 @@
 
 ## State and scope
 
-- Current phase: **Phase 1 — Migration and environment setup** (specification A+B).
-- Overall: **PHASE 1 DONE**. Persistence/startup were verified automatically in the managed workspace. Successful execution in GitHub Codespaces was confirmed by the project owner on 2026-11-07; this external validation is reported evidence, not an agent-executed Codespaces test. Original Java runtime was reviewed statically only.
+- Current phase: **Phase 2 — Data model, authentication and security: DONE** (implementation verified; separate PR review pending). Phase 1 is merged.
+- Overall: **PHASE 1 DONE / PHASE 2 DONE, READY FOR REVIEW**. Clean install/build, schema validation, 18 independent and 24 MySQL integration tests plus native browser flows pass. Phase 1 is merged through PR #1. Actual Codespaces testing of the new authentication flow remains later acceptance work; the previous project-owner confirmation only covers Phase 1.
 - Scope: first bimester only. This checklist combines PROJECT_SPEC.md and the academic guide's first-bimester rubric. Attachment prose defines requirements, not separate tool instructions.
 - Statuses: TODO, IN_PROGRESS, BLOCKED, DONE. Checkboxes indicate verified completion only.
 
@@ -25,15 +25,15 @@
 
 ## Phase 2 — Data model, authentication and security (depends on Phase 1)
 
-- [ ] TODO: full Prisma models Company, User, Inventory, FoodItem, Category, Recipe, RecipeIngredient, ChatRoom, ChatMessage, PasswordResetToken and persistent Session storage; reviewed migrations, FK/tenant constraints, uniqueness, indexes and ER diagram.
-- [ ] TODO: synthetic company/user/inventory/category/recipe/chat seed; no real personal data or original passwords.
-- [ ] TODO: registration name/email/password validation in client + Zod server, normalized unique email, atomic company + ADMIN + inventory + general-room onboarding; controlled EMPLOYEE enrollment.
-- [ ] TODO: Argon2id salted hashes; login verified against MySQL; rotate session ID; login brute-force protection.
-- [ ] TODO: persistent express-session store; HttpOnly/SameSite cookies, Secure on HTTPS, Codespaces trusted proxy configuration, logout invalidation.
-- [ ] TODO: protect all business routes; ADMIN/EMPLOYEE authorization and company isolation; no client-controlled tenant/role trust.
-- [ ] TODO: random reset token, hash-only storage, one use, expiry, atomic consumption, private simulated mail, generic public response and session invalidation policy.
-- [ ] TODO: CSRF for mutations; Helmet/CSP, escaped EJS, parameterized Prisma, secret validation, clear safe errors.
-- [ ] TODO: automated registration, duplicate email, wrong password, protected route, reset expiry/reuse, role/isolation and persistent-session checks on separate test database.
+- [x] DONE: complete Prisma models Company, User, Inventory, FoodItem, Category, Recipe, RecipeIngredient, ChatRoom, ChatMessage, PasswordResetToken and Session. Additive migration applied to real development/test MySQL; compound tenant FKs, uniqueness, indexes, decimal/date SQL checks and ER diagram verified.
+- [x] DONE: idempotent fictional company/ADMIN/EMPLOYEE/inventory/category/food/recipe/ingredient/room/message seed. Initial passwords are random/discarded; repeated seed preserves accounts/passwords. Exact entity counts are verified.
+- [x] DONE: name/email/password/client confirmation validation with HTML5/JavaScript and server Zod; normalized unique email; atomic company + ADMIN + inventory + general-room creation; same-company ADMIN-only EMPLOYEE enrollment; public role/tenant injection rejected.
+- [x] DONE: Argon2id (19MiB, timeCost2, parallelism1), real MySQL login, session-ID regeneration, generic login failures and basic login/registration/recovery/enrollment IP limits.
+- [x] DONE: MySQL-backed express-session store, expiry, HttpOnly/SameSite=Lax, Secure with HTTPS, trusted Codespaces proxy configuration and logout invalidation. Persistence across application instances and expired-session rejection pass; no MemoryStore fallback.
+- [x] DONE: currently implemented account/team routes protected; role and company reloaded server-side; ADMIN/EMPLOYEE and tenant isolation verified at HTTP and FK levels. Future Phase 3/4 routes require the same guards.
+- [x] DONE: random256-bit reset token; hash-only MySQL storage, 30-minute expiry, new-link invalidation, atomic single consumption including concurrency, private mode0600 simulated outbox and generic public response. Password changes delete sessions and increment a version to reject stale concurrent saves.
+- [x] DONE: synchronizer CSRF and same-origin handling for native no-referrer forms; Helmet/CSP, escaped EJS, parametrized Prisma, safe errors and validated HTTP(S) origin/production HTTPS configuration. External scripts/fonts moved to local assets.
+- [x] DONE: real automated registration/duplicate/wrong-password/protected-route/role/tenant/session/reset expiry-reuse-concurrency tests on separate MySQL; desktop/mobile native-browser register/logout/recovery/reset/login flow verified. The original landing/login/registration markup, green/gray palette, logo, Inter and CSS identity are retained in EJS.
 
 ## Phase 3 — Business functionality (depends on Phase 2)
 
@@ -69,10 +69,10 @@
 
 ## Current task
 
-**Task:** Close Phase 1 and update/merge PR #1.
-**Status:** IN_PROGRESS. Runtime verification passed; successful Codespaces execution was confirmed externally. PR description and progress are being updated in impersonal language before merging.
-**Files:** `tests/database.integration.test.js`, `PROGRESS.md`, `docs/PHASE1_VERIFICATION.md`, `README.md`.
-**Last verified state:** 14 HTTP/configuration + 6 real MySQL integration tests pass; migrations, repeat seed, startup/shutdown and desktop/mobile browser verified. Codespaces operation confirmed by the project owner. Phase 2 has not started.
+**Task:** Publish Phase 2 authentication/security and preserved original appearance for review.
+**Status:** Implementation and verification DONE on `codex/phase-2-authentication`; separate PR publication IN_PROGRESS. No Phase 2 merge is being performed.
+**Files:** Prisma schema/migration/seed; auth/users/session/security modules; EJS/public assets; tests; README, DATA_MODEL.md, AUTHENTICATION.md, MIGRATION_PLAN.md and this progress log.
+**Last verified state:** Clean `npm ci` (307 packages), full build/schema validation, 18 independent + 24 real-MySQL tests PASS. Native desktop/mobile register/logout/recovery/reset/login flow PASS, original Inter/palette/layout retained. Test/browser synthetic users cleaned; development demo users remain exactly two.
 
 ## Completed work and evidence
 
@@ -97,13 +97,13 @@ These results describe the previous session. Superseded network/container-state 
 
 ## Issues and blockers
 
-- No active Phase 1 blocker. Prisma downloads and real persistence/startup pass. Successful Codespaces operation was confirmed by the project owner on 2026-11-07.
-- Historical limitation: full devcontainer image extraction exceeded disk capacity in this managed executor. It does not describe the separately tested Codespace. No local devcontainer build success is claimed.
-- Authentication, tenant enforcement, business screens, chat and release acceptance remain pending. Codespaces session/form checks will be exercised after authentication exists; WebSocket checks after Phase 4.
+- No active Phase 1/2 implementation blocker. Phase 1 Codespaces operation was externally confirmed; Phase 2 behavior is verified locally with real MySQL and browser tests. New authentication/session forms still need a fresh Codespaces HTTPS acceptance run; the previous confirmation is not attributed to the new code.
+- Historical managed-executor image-extraction disk limit remains recorded. No local devcontainer rebuild success is claimed.
+- Inventory CRUD, dashboard metrics, recipes, expiration UI, Socket.IO and release acceptance remain Phase 3–5 work. No business functionality is inferred solely from its schema/seed.
 
 ## Next action
 
-Update PR #1 with the verified persistence/startup results and externally confirmed Codespaces validation, then merge. Phase 2 starts with the complete tenant-safe schema, followed by authentication/security. Original HTML/JSP markup and CSS will be adapted to EJS to preserve the existing visual identity, as requested by the project owner.
+Publish Phase 2 for review on its own branch without merging it into main; clean-install regression has passed. The next implementation phase is tenant-scoped inventory CRUD/dashboard/recipes, reusing the original JSP/HTML/CSS identity. Actual Codespaces authentication/cookie/form testing is required before final bimester delivery.
 
 ## Historical session change log — initial foundation
 
@@ -155,3 +155,23 @@ Chronological entries below include intermediate states; the current authoritati
 - Successful operation in Codespaces was confirmed by the project owner. This closes the external acceptance gate; no additional Codespaces trace or agent-run rebuild is claimed.
 - PR #1 update and merge were explicitly requested. The PR is open, draft and mergeable at head `8cd7150`; remote `main` has no conflicting changes.
 - Status: IN_PROGRESS for the documentation/test follow-up commit, PR update and merge. The subsequent Phase 2 work will use a separate branch and preserve the original HTML/CSS appearance.
+
+## Phase 2 implementation — 2026-11-07
+
+- IN_PROGRESS: schema/migration and original-template adaptation inspected before edits. Public registration will atomically create a company, ADMIN, inventory and general room. Employees will be enrolled only by the same-company ADMIN; no public role/company assignment.
+- Security design: Argon2id; MySQL-backed express-session with rotation and version-based reset revocation; synchronizer CSRF + same-origin checks; one-use hashed reset tokens with atomic consumption; private ignored development outbox; server-side role/tenant resolution on every protected request.
+
+### Phase 2 implementation and verification results
+
+- PR #1: impersonal Spanish title/body updated; 20 Phase 1 tests passed again; commit `2726c43` pushed; draft status removed; merge performed with expected head SHA. GitHub returned `merged: true`, merge commit `aa6d158951571a82810c090a23c6b15550b0487c`. Phase 2 branch created from that merged main. No Phase 2 merge is authorized by the Phase 1 merge request.
+- Implemented schema/migration, auth validation/service/routes, PrismaSessionStore, CSRF/auth/role middleware, controlled employee enrollment, private reset mail, client validation and original-template EJS/CSS adaptation. Added DATA_MODEL.md and AUTHENTICATION.md; README rewritten in impersonal Spanish with real setup/recovery instructions and scope.
+- Migration generation first used `--from-migrations` and failed because no shadow database was configured. No schema changed. Generated the additive diff from the actual bootstrap datasource instead, inspected its SQL (no drops), added explicit CHECK constraints, then applied normally to development and isolated test MySQL.
+- `npm run build`, `npm run db:validate`, migration deploy and seed twice → PASS. `prisma migrate status` → up to date; `prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --exit-code` → no difference. Seed assertions verify two users and one inventory/category/food/recipe/ingredient/room/message, including preservation of the original company and existing password hash.
+- Initial Phase 2 regression → 14 independent + 23 integration tests PASS. Added four origin/production configuration cases and the native-form regression; current suites → **18 independent + 24 integration = 42 PASS**. Integration additionally exercises stale sessions recreated after reset, decimal persistence, nonnegative stock/date checks, tenant FKs and targeted cleanup of each created session/company.
+- Browser testing initially used 127.0.0.1 instead of the configured localhost origin; the harness was aligned with APP_ORIGIN. It then exposed a real HTTP403 on native registration despite a valid session/token: Chromium sends `Origin: null` under Helmet's no-referrer policy. CSRF handling now accepts that case only with same-origin Fetch Metadata and a valid constant-time token check; cross-site opaque requests remain403. A dedicated automated regression passes.
+- `node work/phase2-browser.mjs` against actual `npm start` → PASS at1280x900 and390x844: original landing/forms, mobile menu, Inter loaded locally, exact original green600 RGB(22,163,74), no horizontal overflow/external network/page errors/CSP violations. Native HTML5 mismatch/match confirmation, registration, protected account/team, POST logout, private mode0600 outbox, token reset and new-password login all pass. Synthetic browser account/session/outbox records are removed after the run; screenshots remain in ignored work/.
+- `npm audit --omit=dev --audit-level=high` → 0 vulnerabilities reported. Final clean-install regression passed: `npm ci` (307 packages) → build → schema validation → 18 independent and 24 integration tests, all PASS (integration duration15.38s). `git diff --check` passes. Actual authentication over forwarded Codespaces HTTPS has not been tested in this managed workspace; no such result is claimed.
+
+- Final data check: development/test both contain zero `auth-*` and `browser-*` users. Development retains exactly two demo users; test retains zero. Session IDs created by integration agents are captured for targeted cleanup. All Phase 2 checkboxes are marked DONE based on executed verification. Separate PR publication is the remaining administrative action.
+
+- Publication check: the initial staged whitespace check detected trailing spaces retained from the source JSP markup in new EJS files. Those spaces were removed without changing markup/classes; the staged check was repeated before commit. Private .env secret values were absent from all publishable files.

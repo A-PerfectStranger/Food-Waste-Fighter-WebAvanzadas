@@ -87,3 +87,11 @@ Phase 1 only scaffolds Company to prove migrations, seed, and persistence. Full 
 5. **Phase 5 (F):** full security/regression checks; at least 5 meaningful tests (target 8+ business cases), reproducible measured performance, required academic materials and Codespaces two-tab HTTPS/wss defense. Only then prepare v1.0-b1; never invent contributions or tag prematurely.
 
 No frontend separation, JWT, gateway or microservice implementation in this bimester. The requested second-bimester roadmap is documentation only after first-bimester implementation priorities.
+
+## Phase 2 implementation decisions — 2026-11-07
+
+Phase 1 was merged through PR #1 after runtime tests and project-owner confirmation of Codespaces operation. The full relational model is implemented in the additive `20261107000200_tenant_auth` migration; [DATA_MODEL.md](DATA_MODEL.md) records its ER diagram, tenant compound FKs, checks and indexes. [AUTHENTICATION.md](AUTHENTICATION.md) records implemented HTTP/session/reset behavior.
+
+The project owner explicitly requested reuse of the supplied HTML to retain the appearance. `landing.html`, authentication JSP markup and the original stylesheet are adapted to EJS/local CSS; Inter and the Tailwind 3 green/gray palette are retained. Duplicate document tags and unsubstantiated landing statistics are removed. Native scripts are moved to local files for CSP. This supersedes the initial plan to introduce a separate foundation visual design; business screens in Phase 3 will continue this same identity.
+
+The seed now contains the complete synthetic model slice. Initial user passwords are random/discarded, so access uses private simulated password recovery; rerunning the seed preserves existing accounts/passwords. Inventory/recipe/chat schema and seed do not imply that their Phase 3/4 functionality has been built.

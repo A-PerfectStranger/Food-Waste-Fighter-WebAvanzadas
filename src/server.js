@@ -9,7 +9,7 @@ try {
   const config = parseEnv(process.env);
   database = createDatabase(config.DATABASE_URL);
   await checkDatabase(database);
-  const app = createApp({ config, checkDatabase: () => checkDatabase(database) });
+  const app = createApp({ config, database, checkDatabase: () => checkDatabase(database) });
   const server = createServer(app);
   server.on('error', async () => {
     console.error('HTTP server failed. Check HOST/PORT and port availability.');

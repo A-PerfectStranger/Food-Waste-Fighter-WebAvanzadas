@@ -54,7 +54,10 @@ async function waitUntilReady(port, child) {
 }
 afterAll(async () => {
   try {
-    if (createdIds.length) await database.company.deleteMany({ where: { id: { in: createdIds } } });
+    if (createdIds.length) {
+      await database.foodItem.deleteMany({ where: { companyId: { in: createdIds } } });
+      await database.company.deleteMany({ where: { id: { in: createdIds } } });
+    }
   } finally {
     await database.$disconnect();
   }
@@ -88,8 +91,23 @@ describe('real MySQL/Prisma Phase 1 bootstrap', () => {
     if (!existing) createdIds.push(where.id);
     expect((await startProcess('prisma/seed.js').exited).code).toBe(0);
     const first = await database.company.findUniqueOrThrow({ where });
+    const counts = async () => Promise.all([
+      database.user.count({ where: { companyId: where.id } }),
+      database.inventory.count({ where: { companyId: where.id } }),
+      database.category.count({ where: { companyId: where.id } }),
+      database.foodItem.count({ where: { companyId: where.id } }),
+      database.recipe.count({ where: { companyId: where.id } }),
+      database.recipeIngredient.count({ where: { companyId: where.id } }),
+      database.chatRoom.count({ where: { companyId: where.id } }),
+      database.chatMessage.count({ where: { companyId: where.id } }),
+    ]);
+    const seededCounts = await counts();
+    expect(seededCounts).toEqual([2, 1, 1, 1, 1, 1, 1, 1]);
+    const adminBefore = await database.user.findUniqueOrThrow({ where: { id: 'demo-admin' } });
     expect((await startProcess('prisma/seed.js').exited).code).toBe(0);
     expect(await database.company.count({ where })).toBe(1);
+    expect(await counts()).toEqual(seededCounts);
+    expect(await database.user.findUniqueOrThrow({ where: { id: 'demo-admin' } })).toEqual(adminBefore);
     expect(await database.company.findUniqueOrThrow({ where })).toEqual(first);
     if (existing) expect(first).toEqual(existing);
   }, 10000);
