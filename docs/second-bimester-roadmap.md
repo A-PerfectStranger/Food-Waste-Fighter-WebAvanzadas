@@ -1,60 +1,35 @@
-# Plan de segundo bimestre — documentación, no implementación
+# Alcance del segundo bimestre
 
-El primer bimestre sigue siendo Node/Express/EJS/MySQL/Socket.IO en un monolito.
-Este documento describe opciones y dependencias; no afirma que React, JWT,
-Gateway o microservicios ya existan. Las decisiones se validarán contra la guía
-real del siguiente bimestre antes de ampliar alcance.
+Referencia de evolución según la guía oficial; no describe funcionalidades
+implementadas en el monolito del primer bimestre. Se conservan registro, login,
+recuperación, CRUD y chat durante la transición.
 
-## Orden propuesto y criterios de salida
+| Requisito obligatorio | Aplicación prevista |
+| --- | --- |
+| Frontend desacoplado | Aplicación independiente, por ejemplo React, que consuma HTTP/WebSocket; componentes reutilizables, estado, routing cliente, carga/error, validación, responsive y accesibilidad. |
+| Modelo de servicios | Capacidades de autenticación/usuarios, inventario y chat; contratos OpenAPI u otro formato, composición de dos o más servicios y al menos tres principios aplicados: bajo acoplamiento, contrato estandarizado y autonomía. |
+| Tres microservicios independientes como mínimo | Código, proceso y despliegue propios por servicio. |
+| Entrada única | API Gateway o proxy inverso que enrute HTTP y WebSocket. |
+| Base por servicio | Instancia o esquema propio, sin consultas a bases ajenas; datos compartidos por API/eventos y análisis del refactoring, duplicación y consistencia. |
+| Comunicación síncrona | REST/HTTP entre servicios con contratos y errores definidos. |
+| Patrones | Al menos dos patrones; al menos uno distinto de API Gateway y Database per Service. Se documentarán problema y ubicación en código; pueden aplicarse Circuit Breaker y Strangler Fig. |
+| Seguridad JWT | Emisión en autenticación, validación en gateway/servicios, dos roles como mínimo y chat autenticado con token; control de firma, audiencia, expiración y revocación. |
+| Contenedores | Dockerfile por componente y Compose para levantar el sistema con un comando. |
+| Observabilidad | Logs estructurados y health por servicio; herramienta demostrada con al menos dos métricas o consultas de logs/trazas. |
+| CI/CD | Pipeline en push/PR a principal que compile, pruebe y construya imágenes; despliegue automático opcional. |
+| Rendimiento de frontend | Informe de rendimiento y al menos una optimización aplicada. |
 
-| Etapa futura | Cambio propuesto | Condición antes de avanzar |
-| --- | --- | --- |
-| 1. Contratos | Inventariar casos, permisos y errores; API versionada y contratos HTTP/eventos | Tests de contrato y paridad con historias actuales |
-| 2. Frontend | Evaluar React para una interfaz separada; accesibilidad y estados de red | Paridad de formularios, teclado, alertas y auth; sin eliminar EJS hasta migrar |
-| 3. Identidad | Servicio de autenticación; evaluar OAuth/OIDC o JWT corto con refresh revocable | Modelo de amenazas, rotación/revocación/audiencias/clave de firma probadas |
-| 4. Separación | Extraer auth, inventario y chat detrás de contratos | Solo tras dominio estable; identidad/empresa no se aceptan del navegador |
-| 5. API Gateway | Terminación TLS, rutas, autenticación de borde y límites | Cada servicio mantiene autorización; el Gateway no es una única barrera |
-| 6. Datos independientes | Una base/propiedad de datos por servicio y migración por etapas | Sin joins/FKs entre bases; integridad y reconciliación explícitas |
-| 7. Eventos | Outbox transaccional, consumidor idempotente y reintentos | Recuperación tras fallo, orden/duplicados y tenant isolation probados |
-| 8. Escala del chat | Adaptador compartido de Socket.IO/presencia, sesión o identidad distribuida | Prueba con múltiples réplicas; revocación y límites coherentes |
-| 9. Operación | Imágenes Docker por servicio, Compose de desarrollo y despliegue por ambiente | Secrets externos, readiness, cierre y rollback ensayados |
-| 10. Observabilidad | Logs estructurados, métricas y trazas correlacionadas sin tokens/PII | Alertas útiles y presupuesto de retención; acceso controlado |
-| 11. CI/CD | Pipeline de lint/tests/contratos/DB/seguridad/build, despliegue y rollback | Entornos aislados, migraciones compatibles y aprobaciones de release |
+La migración de datos será aditiva y verificable, con contratos de identidad y
+empresa entre servicios. Se mantendrán los casos de aislamiento y revocación.
+Las operaciones entre bases requieren consistencia explícita; no se sustituye
+una transacción local por una supuesta transacción Prisma distribuida.
 
-## Identidad, cookies y JWT
+Son opcionales Kubernetes, OAuth 2.0/OpenID Connect, despliegue continuo a nube
+y mensajería asíncrona. La seguridad JWT es obligatoria y no se reemplaza por
+la elección opcional de OAuth/OIDC. Presencia/límites compartidos y entrega de
+eventos deberán verificarse si se ejecutan varias réplicas.
 
-Una SPA no obliga por sí sola a sustituir cookies de sesión. Evaluar un BFF o
-cookie HttpOnly antes de almacenar tokens en JavaScript. Si la guía exige JWT,
-validar firma/algoritmo permitido, emisor, audiencia, expiración y tenant del
-servidor; usar access tokens breves y rotación de refresh con detección de reúso.
-No guardar secretos de larga duración en localStorage por conveniencia.
-
-Cambiar sesión por JWT no resuelve CSRF/XSS ni la revocación. El handshake de
-chat deberá autenticar la nueva identidad, autorizar sala/empresa y revalidar al
-caducar/revocar credenciales. Los tests actuales de empresas ajenas se preservan.
-
-## Migración de datos y consistencia
-
-Auth será dueño de usuarios/identidad; inventario de alimentos/categorías/recetas;
-chat de salas/mensajes. Las referencias externas ya no podrán depender de FK
-entre servicios: habrá IDs de dominio, validación de contratos y eventos de
-cambio/borrado. Migraciones aditivas, backfill verificable, lectura gradual y
-rollback reemplazarán cualquier reset destructivo.
-
-Una operación distribuida no es una transacción Prisma compartida. Diseñar
-outbox y compensación cuando aporte valor; consumidores deduplican por eventId.
-Las notificaciones deben poder reconciliarse con la consulta persistida. No
-prometer entrega exactamente una vez.
-
-## Rendimiento y riesgos
-
-Usar la medición de fase 5 como línea base local, no como SLA de producción.
-Definir después carga, tamaño, concurrencia y percentiles; medir el coste de red
-y autenticación agregados por la separación. Revisar búsqueda de subcadenas,
-cursor para inventario profundo, índices de tenant y planes con datos realistas.
-Redis/broker, tracing y réplicas aumentan operación; no se añaden sin pruebas de
-beneficio, presupuesto y responsables. Mantener backups, restore, pruebas de
-caída/reintento y documentación de datos personales.
-
-Los entregables del siguiente bimestre serán revisados por el equipo/docente;
-ningún servicio, token o frontend de esta hoja de ruta se implementa en fase 5.
+La presentación incluirá arquitectura anterior/nueva, contratos y composición,
+refactoring de datos, patrones, seguridad, contenedores, observabilidad,
+pipeline y ejecución extremo a extremo. Se mantendrán el repositorio público,
+los aportes auténticos y la declaración de IA; la entrega se etiquetará v2.0-b2.

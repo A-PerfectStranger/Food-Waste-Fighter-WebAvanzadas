@@ -11,7 +11,7 @@ The project is a migration of an existing Java/JSP application into a Node.js mo
 Before modifying any code:
 
 1. Read `docs/PROJECT_SPEC.md`.
-2. Read `docs/MIGRATION_PLAN.md` if it exists.
+2. Read `docs/TECHNICAL_REFERENCE.md` for the current architecture, model and contracts.
 3. Read `PROGRESS.md` to understand the current state.
 4. Inspect the relevant existing code before making changes.
 

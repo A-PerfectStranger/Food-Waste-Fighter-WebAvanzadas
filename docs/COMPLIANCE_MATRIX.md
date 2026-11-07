@@ -1,73 +1,39 @@
-# Matriz de requisitos y cotejo de la rúbrica
+# Rúbrica y cumplimiento del primer bimestre
 
-## Fuentes y alcance de la comprobación
+Fuente: **Guía del Proyecto AppWebAv.docx**, sección «Evaluación → Primer
+bimestre (sobre 20 puntos)». El proyecto representa el 30 % de cada aporte,
+según la guía. Los pesos y máximos siguientes corresponden a la tabla oficial;
+se indican evidencias disponibles y pendientes, no calificaciones obtenidas.
 
-La especificación versionada es [PROJECT_SPEC.md](PROJECT_SPEC.md). La auditoría
-histórica de la guía se conserva en MIGRATION_PLAN.md y PROGRESS.md, donde se
-registra una rúbrica de primer bimestre de **20 puntos**.
+| Criterio oficial | Peso | Máximo | Referencia y estado |
+| --- | ---: | ---: | --- |
+| Planteamiento del problema, objetivos y cronograma | 5 % | 1,0 | [PROJECT_SPEC.md](PROJECT_SPEC.md): problema, objetivos medibles y semanas propuestas. [README](../README.md): roles; nombres y aportes por completar. |
+| Requerimientos funcionales o historias de usuario | 7,5 % | 1,5 | [PROJECT_SPEC.md](PROJECT_SPEC.md): HU01–HU12 priorizadas, coherentes con las rutas implementadas. |
+| Diagrama de arquitectura | 5 % | 1,0 | [TECHNICAL_REFERENCE.md](TECHNICAL_REFERENCE.md): capas del monolito, MySQL, sesiones y servidor Socket.IO compartido. |
+| Registro (SignUp) y recuperación de clave (reset/forgot) | 10 % | 2,0 | Registro, validación cliente/servidor, hash de token, caducidad y consumo único. `tests/auth.integration.test.js`. |
+| Inicio de sesión (SignIn) y seguridad | 10 % | 2,0 | Argon2id, sesiones MySQL, cookies seguras, rutas/roles/empresas protegidos y CSRF. `tests/auth.integration.test.js`. |
+| Pantalla principal con operaciones CRUD | 15 % | 3,0 | Dashboard; alta, búsqueda/categoría, ID, edición, borrado confirmado y paginación. `tests/business.integration.test.js`. |
+| Chat que use WebSockets | 12,5 % | 2,5 | Socket.IO propio, autenticación, dos usuarios, historial, presencia y aviso adicional. `tests/chat.integration.test.js` y verificación de navegador. |
+| Guarda datos en una base de datos (relacional o NoSQL) | 7,5 % | 1,5 | MySQL/Prisma, esquema y ER, claves compuestas e índices. [TECHNICAL_REFERENCE.md](TECHNICAL_REFERENCE.md) y `tests/database.integration.test.js`. |
+| Calidad: pruebas, README y rendimiento | 7,5 % | 1,5 | 106 pruebas registradas, ejecución y .env.example; medición de consultas y 40 escaneos. [VALIDATION.md](VALIDATION.md). |
+| Link de repositorio público con commits de todos los integrantes | 5 % | 1,0 | Repositorio público en README. Pendientes: aportes/commits reales de todos y etiqueta v1.0-b1; no se publican secretos ni datos personales reales. |
+| Presentación en grupo, defensa y evidencias subidas a la plataforma | 15 % | 3,0 | [DELIVERY.md](DELIVERY.md): contenido, demo y participación. Pendientes: exposición de todos, respuestas individuales, presentación y entrega de evidencias. |
+| **Total** | **100 %** | **20,0** | La evaluación corresponde al docente. |
 
-**El DOCX oficial no está disponible en este executor durante la fase 5.** No se
-han vuelto a comprobar sus rótulos, versión ni pesos individuales. Esta matriz
-cubre los requisitos conservados en la especificación, pero no se presenta
-como transcripción literal ni como calificación obtenida. El equipo debe cotejar
-cada fila con `[VERSION_GUIA_OFICIAL]`, consignar `[CRITERIO_OFICIAL]` y
-`[PESO_OFICIAL]`, y verificar que la suma sea 20. No se reparten puntos inventados.
+## Cobertura funcional y no funcional
 
-Estado técnico: implementado/verificado localmente según evidencias enlazadas.
-Estado de entrega: documentos y procedimientos preparados; autoría real,
-cotejo oficial, exposición y envío dependen del equipo.
-
-| ID | Requisito del primer bimestre | Implementación y evidencia | Estado / límite |
-| --- | --- | --- | --- |
-| R01 | Problema de una PYME y objetivos medibles | ACADEMIC_BRIEF.md, contexto/objetivos/criterios | Preparado; beneficios de negocio no medidos |
-| R02 | Monolito Node 24 + Express/EJS | src/server.js, app.js; ARCHITECTURE.md | Implementado, sin SPA/microservicios |
-| R03 | HTML5/Tailwind/JS, interfaz coherente | src/views, estilos locales; verificación browser/axe | Revisado en alcance declarado; no certificación WCAG |
-| R04 | MySQL/Prisma, relaciones e índices | schema y migraciones; DATA_MODEL.md; suites de DB | Persistencia real, tenant FKs y CHECKs |
-| R05 | Registro validado y duplicado | auth.validation/service/routes; auth integración | Caso válido/duplicado/inyección verificados |
-| R06 | Login con hash y logout | Argon2id, sesiones persistentes, rotación y logout POST | Verificado; nunca contraseñas en claro |
-| R07 | Recuperación expirable de un uso | PasswordResetToken, outbox privado y consumo atómico | Verificado, correo simulado explícito |
-| R08 | Roles y rutas protegidas | middleware, equipo, negocio; auth/business integración | ADMIN/EMPLOYEE y empresa del servidor |
-| R09 | Dashboard y navegación CRUD/chat | dashboard.routes y EJS/navbar | Cuatro métricas, alertas, enlaces funcionales |
-| R10 | CRUD con más de 5 atributos | FoodItem: nombre/cantidad/unidad/categoría/ingreso/caducidad/mínimo | Alta/lista/ID/edición/borrado confirmado |
-| R11 | Validación cliente/servidor y errores | HTML5, inventory.js/auth.js, Zod | Fechas/decimales/campos extra y mensajes comprobados |
-| R12 | Búsqueda, SQL paginado e índices | inventory.repository; tests; PERFORMANCE.md | 10 por página; contains no equivale a índice de prefijo |
-| R13 | Recetas/caducidad útiles del original | recipes, expiration y BUSINESS_FUNCTIONALITY.md | Pasos/ingredientes; días civiles y stock útil |
-| R14 | Socket.IO mismo servidor y handshake | chat.socket + sesión/token/origen; REALTIME.md | Anónimo rechazado y revocación vigente |
-| R15 | Dos usuarios, sala, historial y presencia | ChatRoom/ChatMessage; chat integración/browser | Persistido, paginado y aislado por empresa |
-| R16 | Validación y XSS en eventos | Zod estricto, escape EJS/textContent | Límites y datos de identidad falsos rechazados |
-| R17 | Aviso adicional sin recarga | inventory:changed tras guardar; banner | Dos usuarios/empresa distinta comprobados |
-| R18 | CSRF, Helmet, cookies y configuración | security/env/session-store; QUALITY_REVIEW.md | Política proxy acotada; no secretos publicados |
-| R19 | Cinco pruebas relevantes, preferible ocho o más | Suites system/auth/business/chat/database/tooling | Se supera mínimo; conteos actuales en PROGRESS |
-| R20 | Base de pruebas separada | Compose mysql-test, guard compartido de scripts | Sin reset de desarrollo, limpieza dirigida |
-| R21 | Rendimiento reproducible | measure:queries; JSON y PERFORMANCE.md | Latencia medida, condiciones y límites explícitos |
-| R22 | Codespaces íntegro desde navegador | devcontainer, Compose, README | Aceptación del dueño registrada; trazas detalladas de defensa por adjuntar |
-| R23 | Diagramas, historias y arquitectura | ARCHITECTURE, DATA_MODEL, ACADEMIC_BRIEF | Documentados contra código vigente |
-| R24 | Cronograma y 4–5 integrantes | ACADEMIC_BRIEF, DEFENSE_DEMO | Propuesta y placeholders autorizados; aportes reales pendientes |
-| R25 | Exposición 15 minutos + 5 preguntas | DEFENSE_DEMO.md | Guion/tiempos y participación preparados; exposición no realizada |
-| R26 | Declaración IA, atribución e integridad | README/ACADEMIC_BRIEF/RELEASE_CHECKLIST | No se inventan commits, nombres, métricas ni entrega |
-| R27 | Plan de segundo bimestre | second-bimester-roadmap.md | Solo documentación, sin implementar ese alcance |
-| R28 | Repositorio/entrega y versión final | README y RELEASE_CHECKLIST | Repositorio público; equipo debe enviar enlace y validar release |
-
-## Ocho casos esenciales para localizar durante la defensa
-
-| Caso | Archivo de prueba |
+| Requisito de la guía | Comprobación disponible |
 | --- | --- |
-| Registro válido y rechazo duplicado | tests/auth.integration.test.js |
-| Contraseña incorrecta y ruta anónima | tests/auth.integration.test.js |
-| Recuperación: expiración, reutilización, concurrencia | tests/auth.integration.test.js |
-| Validación del alimento y persistencia decimal | tests/business.integration.test.js |
-| Búsqueda y segunda página real | tests/business.integration.test.js |
-| Rechazo de handshake anónimo | tests/chat.integration.test.js |
-| IDs/salas/cursores/identidad entre empresas | tests/business.integration.test.js, tests/chat.integration.test.js |
-| Persistencia e intercambio entre dos clientes | tests/chat.integration.test.js |
+| PYME realista, 4–5 integrantes y entidad principal con al menos 5 atributos | Cafetería/restaurante; estructura del equipo en README; FoodItem con siete atributos de negocio. |
+| Vistas, routing, negocio, persistencia y WebSocket en un proyecto desplegable | Express/EJS/Prisma/Socket.IO en el mismo proceso; arquitectura documentada. |
+| Validación en cliente/servidor y mensajes claros | HTML5/JavaScript y Zod; casos positivos y negativos de cuentas/inventario/chat. |
+| Inyección, XSS, CSRF, secretos y wss | Consultas parametrizadas, escape/textContent, token CSRF, entorno privado y comprobación HTTPS/wss local. La evidencia detallada de Codespaces se adjunta a la entrega. |
+| Menú, búsqueda, paginación, índices y chat sin recarga | Rutas protegidas y contratos documentados; suites business/chat y medición real. |
+| Persistencia y esquema documentado | Once modelos Prisma, ER, migraciones y pruebas en MySQL independiente. |
+| Cinco pruebas automatizadas relevantes como mínimo | Registro/duplicado/login/reset, CRUD/búsqueda/páginas, sockets/aislamiento/historial y seguridad de automatización. |
+| README: problema, stack, ejecución, entorno, diagramas, equipo e IA | README y referencias técnicas/académicas enlazadas. |
+| Presentación de 15 minutos y 5 de preguntas, demo en vivo y participación individual | Guion y lista de entrega en DELIVERY.md. |
+| Repositorio público, commits auténticos, v1.0-b1 y presentación en carpeta del grupo | Pendientes de cierre indicados en DELIVERY.md; el envío no se considera realizado. |
 
-## Cierre del cotejo oficial
-
-| Dato de integridad | Por completar con la fuente oficial |
-| --- | --- |
-| Documento/versión y página de rúbrica | `[GUIA_OFICIAL_Y_PAGINA]` |
-| Correspondencia filas R01–R28 → criterio oficial | `[MAPEO_CRITERIOS_OFICIALES]` |
-| Pesos de criterios y suma | `[PESOS_OFICIALES_CON_SUMA_20]` |
-| Observaciones/docente | `[OBSERVACIONES_REALES]` |
-
-La suma histórica de 20 puntos no significa que el proyecto haya obtenido 20/20.
+La ejecución en Codespaces es un requisito adicional del proyecto. La evidencia
+local HTTP/HTTPS/wss no se presenta como captura del despliegue remoto.
