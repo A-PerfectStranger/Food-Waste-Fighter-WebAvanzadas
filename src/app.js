@@ -4,6 +4,10 @@ import { PrismaSessionStore } from './config/session-store.js';
 import { authentication, csrfProtection, requireUser } from './middleware/security.js';
 import { authRoutes } from './modules/auth/auth.routes.js';
 import { usersRoutes } from './modules/users/users.routes.js';
+import { dashboardRoutes } from './modules/dashboard/dashboard.routes.js';
+import { inventoryRoutes } from './modules/inventory/inventory.routes.js';
+import { categoriesRoutes } from './modules/categories/categories.routes.js';
+import { recipesRoutes } from './modules/recipes/recipes.routes.js';
 import helmet from 'helmet';
 import { fileURLToPath } from 'node:url';
 import { systemRoutes } from './modules/system/system.routes.js';
@@ -40,8 +44,14 @@ export function createApp({ config, checkDatabase, database, sendResetMail }) {
     }));
     app.use(csrfProtection(config));
     app.use(authentication(database));
+    app.use((req, res, next) => { res.locals.currentPath = req.path; next(); });
     app.use('/auth', authRoutes({ database, config, sendResetMail }));
-    app.get('/dashboard', requireUser, (_req, res) => res.render('account'));
+    app.use('/dashboard', dashboardRoutes({ database, config }));
+    app.get('/account', requireUser, (_req, res) => res.render('account'));
+    app.use('/inventory', inventoryRoutes({ database, config }));
+    app.use('/expiration', inventoryRoutes({ database, config, expirationPage: true }));
+    app.use('/categories', categoriesRoutes({ database, config }));
+    app.use('/recipes', recipesRoutes({ database, config }));
     app.use('/team', usersRoutes({ database, config }));
   }
   app.use(notFound);

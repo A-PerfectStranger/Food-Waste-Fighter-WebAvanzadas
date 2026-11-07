@@ -113,4 +113,4 @@ erDiagram
 
 El seed crea una cafetería ficticia, dos usuarios (ADMIN/EMPLOYEE), inventario, categoría, alimento decimal, receta/ingrediente y sala/mensaje. Los identificadores son estables, las operaciones son idempotentes y los registros existentes no se sobrescriben. Las contraseñas iniciales son aleatorias y se descartan; el acceso se establece mediante recuperación de contraseña en la bandeja privada de desarrollo.
 
-El esquema de inventario/recetas/chat prepara las fases siguientes. Su presencia y sus datos de ejemplo no implican que sus pantallas o eventos en tiempo real estén implementados.
+La fase 3 reutiliza este esquema para el CRUD, categorías, métricas, caducidad y consulta de recetas; no añade migraciones. El esquema/seed del chat todavía prepara la fase 4 y no implica que haya comunicación en tiempo real.

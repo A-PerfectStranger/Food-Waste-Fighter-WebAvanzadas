@@ -2,7 +2,7 @@
 
 Aplicación académica para una cafetería o restaurante pequeño: control de alimentos, aprovechamiento de ingredientes y coordinación del personal. Se utiliza un monolito Node.js con vistas renderizadas en el servidor.
 
-**Estado:** fase 1 completada y fusionada mediante [PR #1](https://github.com/A-PerfectStranger/Food-Waste-Fighter-WebAvanzadas/pull/1). Se implementa la fase 2 de modelo de datos, autenticación y seguridad. El inventario, las métricas del dashboard, las recetas y el chat funcional corresponden a las fases siguientes. El esquema y el seed de esas entidades no representan funcionalidades terminadas. El estado y las evidencias se conservan en [PROGRESS.md](PROGRESS.md).
+**Estado:** fases 1 y 2 fusionadas en `main` (PR #1 y #2). La fase 3 incorpora dashboard, inventario CRUD, búsqueda/paginación, categorías, caducidad y consulta de recetas, conservando las plantillas y estilos del proyecto original. El chat y las notificaciones en tiempo real corresponden a la fase 4. El estado y las evidencias se conservan en [PROGRESS.md](PROGRESS.md).
 
 ## Ejecución íntegra en GitHub Codespaces
 
@@ -24,7 +24,7 @@ npm run dev
 
 4. El puerto3000 se abre desde el panel **Ports**, con visibilidad privada. El servidor escucha en `0.0.0.0`. `/health` comprueba HTTP y `/ready` consulta MySQL; el arranque exige disponibilidad de la base de datos.
 
-La ejecución de la fase 1 en Codespaces fue confirmada por la persona responsable del proyecto. Las comprobaciones de fase2 se ejecutan en MySQL real y navegador local, incluyendo simulación del proxy HTTPS en pruebas HTTP; todavía no se dispone de una confirmación externa de los nuevos formularios en Codespaces.
+La ejecución de las fases 1 y 2 en Codespaces fue confirmada por la persona responsable del proyecto. Las nuevas pantallas de fase 3 se comprueban con MySQL y Chromium locales; su aceptación en el HTTPS reenviado de Codespaces queda pendiente y no se deduce de esas pruebas.
 
 ### Configuración
 
@@ -39,7 +39,7 @@ La ejecución de la fase 1 en Codespaces fue confirmada por la persona responsab
 | SESSION_SECRET | Secreto de firma de sesiones, mínimo32 caracteres; se genera automáticamente. |
 | MYSQL_* | Credenciales, base y puerto del contenedor de desarrollo. |
 | TEST_DATABASE_URL, TEST_MYSQL_* | Base y contenedor de pruebas independientes, puerto3307. |
-| BUSINESS_TIMEZONE | Zona de negocio prevista para la clasificación de caducidad de fase3. |
+| BUSINESS_TIMEZONE | Zona IANA para el día del negocio y la clasificación de caducidad (por defecto America/Guayaquil). |
 
 El origen se deriva del Codespace al crear `.env`. Si se reutiliza un archivo de otro entorno, se actualizan APP_ORIGIN y TRUST_PROXY. En producción se exige APP_ORIGIN con HTTPS; la cookie utiliza Secure en HTTPS, HttpOnly y SameSite=Lax. El arranque imprime el origen canónico que cargó el proceso. Tras editar .env se reinicia el servidor. La protección exige siempre el token de sesión; bajo HTTPS y el proxy configurado admite la señal de navegador `Sec-Fetch-Site: same-origin` si el proxy cambia Origin. Fuera de ese caso se comprueba el origen configurado.
 
@@ -50,7 +50,7 @@ El volumen `mysql_data` conserva desarrollo; `docker compose stop` mantiene los 
 - `/` reutiliza la portada HTML original con sus clases y estilos.
 - `/auth/register` crea empresa, ADMIN, inventario y sala General en una transacción. No se aceptan roles ni empresas ajenas desde el formulario.
 - `/auth/login` verifica Argon2id y regenera la sesión; `/auth/logout` solo admite POST protegido.
-- `/dashboard` muestra la cuenta protegida. Las métricas y el CRUD se incorporarán en fase3.
+- `/dashboard` muestra los totales, próximos a caducar, caducados, stock bajo, alertas y recetas coincidentes. `/account` conserva la vista protegida de la cuenta.
 - `/team` permite a ADMIN consultar su equipo y crear EMPLOYEE dentro de su propia empresa.
 - `/auth/forgot` y `/auth/reset` completan la recuperación con token de treinta minutos y un solo uso. Solo se almacena su hash en MySQL. El cambio revoca las sesiones anteriores.
 
@@ -61,6 +61,16 @@ Los formularios de `login.jsp`/`registro.jsp`, la portada `landing.html` y el CS
 El seed crea los usuarios ficticios `admin@semilla.example` y `equipo@semilla.example` con contraseñas iniciales aleatorias que se descartan. El acceso se establece solicitando recuperación en `/auth/forgot`, consultando el JSON generado en **`work/outbox/` desde el editor privado**, y abriendo su enlace para definir una contraseña propia.
 
 La bandeja está ignorada por Git, sus archivos tienen permisos0600 y no se sirven por HTTP. Los enlaces no se muestran en respuestas públicas ni en logs. Se trata de una simulación académica de correo, sin servicio SMTP. El seed es idempotente y no cambia las contraseñas ya establecidas.
+
+## Inventario, categorías, caducidad y recetas
+
+`/inventory` permite buscar por producto o categoría, combinar filtros de categoría/estado y paginar desde MySQL (10 registros). Los alimentos tienen detalle, alta, edición y eliminación con confirmación. Se validan cantidades con hasta 3 decimales, unidades, fechas de ingreso/caducidad y mínimo de stock. ADMIN y EMPLOYEE pueden registrar/editar; ADMIN administra categorías y elimina productos. Todas las consultas y mutaciones se limitan a la empresa autenticada.
+
+`/expiration` conserva la clasificación original: crítico de hoy a 2 días, advertencia entre 3 y 5, normal desde 6; los caducados aparecen separados. Stock bajo significa cantidad menor o igual al mínimo. `/recipes` muestra recetas persistidas, ingredientes y pasos; marca coincidencias por nombre con productos no caducados y con stock. No promete suficiencia de cantidades ni convierte unidades.
+
+Para la demostración se recupera el acceso a la empresa ficticia del seed, que incluye un alimento y una receta. Una empresa recién registrada empieza vacía; su ADMIN crea categorías antes del primer alimento. La consulta de recetas utiliza los datos cargados por seed/persistencia; no se incluye un editor de recetas en esta fase.
+
+Las pantallas adaptan `dashboard.jsp`, los formularios/listados de alimentos, `productosACaducar.jsp`, `recetas.jsp`, `detalleReceta.jsp` y `navbar.jsp` del ZIP suministrado. El CSS original se conserva, con fuente y compilación locales. No se inventan imágenes ni valores nutricionales ausentes del modelo. Las decisiones y permisos se detallan en [Funcionalidad empresarial](docs/BUSINESS_FUNCTIONALITY.md).
 
 ## Pruebas
 
@@ -73,7 +83,7 @@ docker compose --profile test up -d --wait mysql-test
 npm run test:db
 ```
 
-Las pruebas independientes cubren HTTP, encabezados, errores y configuración. Las de integración ejercitan MySQL, seed idempotente, arranque/apagado, registro/duplicados, contraseñas, sesión persistente y caducidad, permisos, aislamiento, CSRF, límites de intentos, recuperación/caducidad/reutilización/concurrencia y restricciones de datos. Las pruebas de inventario y de WebSockets se incorporarán con sus módulos.
+Las pruebas independientes cubren HTTP, configuración, fechas civiles y validación decimal. Las de integración ejercitan MySQL, seed, arranque/apagado, autenticación, sesión, recuperación, CSRF, permisos y aislamiento; además, CRUD real, confirmación, búsquedas/paginación, métricas, caducidad, categorías, recetas y XSS. Las pruebas de WebSockets se incorporarán en fase 4.
 
 El ejecutor rechaza bases sin sufijo `_test`, protocolos distintos de MySQL y el nombre de desarrollo antes de migrar. Solo se eliminan registros creados por las pruebas; el servicio mysql-test usa tmpfs y credenciales independientes. Los puertos3306/3307 no requieren reenvío público.
 
@@ -93,11 +103,14 @@ flowchart LR
   Security --> Sessions[PrismaSessionStore]
   Sessions --> DB
   Auth --> Mail[Bandeja privada de desarrollo]
+  Security --> Business[Dashboard / inventario / categorías / recetas]
+  Business --> Prisma
 ```
 
 - [Plan y auditoría de migración](docs/MIGRATION_PLAN.md).
 - [Modelo de datos y diagrama ER](docs/DATA_MODEL.md).
 - [Autenticación, seguridad y adaptación visual](docs/AUTHENTICATION.md).
+- [Funcionalidad empresarial y conservación de estilos](docs/BUSINESS_FUNCTIONALITY.md).
 - [Evidencias de fase1](docs/PHASE1_VERIFICATION.md).
 - [Progreso, resultados y siguientes tareas](PROGRESS.md).
 
@@ -107,7 +120,7 @@ Stack: Node.js24 LTS, Express5, EJS, Tailwind4, Inter, Prisma7.10.1, MySQL8.4, A
 
 Las referencias son `Food_Waste_Fighter-main.zip` y `Guía del Proyecto AppWebAv.docx`, aportadas al proyecto. Se reutiliza el HTML/JSP/CSS visual del ZIP por solicitud expresa; no se importa su manejo de contraseñas, sus cuentas ni su SQL destructivo. La autoría original no fue indicada en los adjuntos. Inter procede de `@fontsource/inter` y se distribuye bajo SIL Open Font License, incluida en el paquete.
 
-El equipo, sus integrantes y roles siguen pendientes de completar con información real. Las fases3–5 incluyen CRUD/dashboard/recetas, WebSockets autenticados, rendimiento y documentación de defensa. No se ha creado `v1.0-b1` ni se presenta la fase2 como entrega final del bimestre.
+El equipo, sus integrantes y roles siguen pendientes de completar con información real. Las fases 4–5 incluyen WebSockets autenticados, rendimiento y documentación de defensa. No se ha creado `v1.0-b1` ni se presenta el estado actual como entrega final del bimestre.
 
 ### Uso de IA
 
