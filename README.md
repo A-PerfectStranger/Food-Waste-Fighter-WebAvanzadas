@@ -2,7 +2,7 @@
 
 Academic application for a fictional small cafeteria/restaurant that needs to reduce expired food, understand stock and coordinate employees. First-bimester target: one Node.js monolith with server-rendered views and its own WebSocket server.
 
-**Current state:** Phase 1 foundation only. The original Java app and course guide were audited. Express/EJS, compiled Tailwind, configuration validation, MySQL Compose and foundation tests are present. Authentication, inventory, dashboard and chat are pending. Prisma client generation/migration/seed and full startup are **not verified** in the current managed environment: access to `binaries.prisma.sh` returns HTTP403. Do not treat this as a completed bimester delivery. See [PROGRESS.md](PROGRESS.md) for evidence, blockers and next tasks.
+**Current state:** Phase 1 complete. Full locked install/build, Prisma schema/migration, idempotent seed, 14 HTTP/configuration + 6 real MySQL integration tests, production startup/shutdown and desktop/mobile browser checks passed. Successful operation in GitHub Codespaces was confirmed by the project owner on 2026-11-07. Authentication, inventory, dashboard and chat remain pending. See [PROGRESS.md](PROGRESS.md) and [verification evidence](docs/PHASE1_VERIFICATION.md). This is not a completed bimester delivery.
 
 ## Run entirely in GitHub Codespaces
 
@@ -24,7 +24,7 @@ npm run dev
 
 4. In the **Ports** panel, open port3000 in your browser. The server binds to `0.0.0.0`. `/health` checks HTTP liveness; `/ready` queries MySQL and returns 503 if it cannot connect. Startup requires a successful database query before listening. A green liveness endpoint alone is not proof that persistence works.
 
-These are the intended startup steps; the Prisma-dependent steps remain blocked/unverified in this session. They must be rerun successfully before marking Phase 1 complete.
+These startup commands passed in the managed Cloud workspace. Successful operation in actual Codespaces was subsequently confirmed by the project owner; detailed Codespaces traces were not supplied.
 
 `npm run setup:env` generates independent random database passwords, root passwords and a session secret into ignored `.env` with mode0600. It never overwrites an existing file. `.env.example` documents configuration without real credentials. Database URLs target containers published on the **Codespaces machine**, never a database on the student's computer.
 
@@ -32,11 +32,9 @@ The script derives APP_ORIGIN and TRUST_PROXY from Codespaces on first creation.
 
 MySQL8.4 (the MySQL8 LTS line) stores development data in the `mysql_data` volume. `docker compose stop` preserves data. Do not remove volumes or run the original Java setup SQL. Changing passwords in `.env` does not change credentials already stored in an initialized volume; preserve the original values or perform an intentional database credential rotation.
 
-### Current environment blocker
+### Verification provenance
 
-The Prisma CLI needs an engine from `https://binaries.prisma.sh`. This managed environment denied that destination with HTTP403; the user chose to resolve access later. No TLS/checksum bypass or substitute migration was used. Once access is available, rerun `npm ci`, `npm run build`, `npm run db:validate`, `npm run db:migrate`, `npm run db:seed`, `npm run test:db`, and `npm start`, recording actual results in PROGRESS.md.
-
-The devcontainer's multi-architecture image manifest was verified, but a full image fetch in this environment encountered a denied redirect to `westus.data.mcr.microsoft.com`. The devcontainer has not been built here; an actual Codespaces rebuild remains unverified. This is distinct from the healthy MySQL containers.
+Prisma generation, migrations, seed and startup passed with normal TLS/checksum verification. The official devcontainer CLI parsed the configuration. Image extraction in the managed executor encountered a disk-capacity limit; successful operation was subsequently confirmed separately in GitHub Codespaces by the project owner on 2026-11-07. No agent-run Codespaces rebuild is claimed. Session/CSRF/Socket.IO acceptance will follow implementation of those features.
 
 ## Stack and layout
 
@@ -55,7 +53,7 @@ src/views/              Server-rendered EJS views (escaped values)
 src/styles/             Tailwind source; generated CSS is ignored
 prisma/                 Company bootstrap schema, migration and fictional seed
 scripts/                Non-overwriting env setup and isolated DB test runner
-tests/                  HTTP/configuration tests + pending DB integration checks
+tests/                  HTTP/configuration + real DB/seed/startup integration checks
 ```
 
 Business modules will follow router → controller → service → repository boundaries within this same process. Socket.IO will attach to the HTTP server in Phase 4. The planned architecture is documented in [MIGRATION_PLAN.md](docs/MIGRATION_PLAN.md), alongside the original architecture and feature mapping. Only Company exists in the current schema; the full tenant-safe relational model/ER diagram must precede authentication.
@@ -65,15 +63,15 @@ Business modules will follow router → controller → service → repository bo
 ```sh
 npm run build:css         # independent of Prisma's engine download
 npm test                 # foundation HTTP/configuration tests; no DB
-npm run db:validate      # requires Prisma engine
+npm run db:validate      # validates the Prisma schema
 # Independent ephemeral test database, separate credentials and port3307:
 docker compose --profile test up -d --wait mysql-test
-npm run test:db           # migrate test DB, then real Prisma integration checks
+npm run test:db           # migrate test DB; persistence, seed, startup/shutdown checks
 ```
 
 The test runner refuses a non-MySQL URL, a database without `_test` suffix, or a database name shared with development. It never resets/deletes development tables. Test records have unique IDs and only those IDs are removed. The test container uses tmpfs, so its contents are disposable on container recreation; the development volume is separate. Do not expose port3306 or3307 through Codespaces.
 
-Verified so far: 14 foundation tests, CSS build, two healthy MySQL containers/authenticated queries, and desktop/mobile browser checks of Express/EJS with a deliberately unavailable database dependency. These foundation tests **do not** satisfy the guide's business-feature testing requirement. The three real Prisma integration tests are written but have not run. Browser-only checks do not establish full server startup, session handling, database persistence or forwarded HTTPS behavior.
+Verified: 14 HTTP/configuration tests and 6 isolated real-MySQL tests, schema/migration/seed (twice with exactly one development demo company), clean test-data removal, full `npm start`, desktop/mobile rendering with real database readiness, clean SIGTERM exit and safe unavailable-DB startup failure without a listener. Run `npm run build` before integration checks so generated Prisma and CSS exist. An unavailable-DB startup can take about 10 seconds because adapter discovery and the readiness query each have a 5-second acquisition timeout. These foundation checks **do not** satisfy the guide's later auth/CRUD/chat testing requirements or establish actual Codespaces HTTPS behavior.
 
 Scripts also include `npm run db:generate`, `npm run db:migrate:dev` (developer-generated future migrations), `npm run db:migrate` (apply reviewed migrations), `npm run db:seed`, `npm start`, and `npm run build`. Future migrations must not use destructive reset commands on development data.
 
