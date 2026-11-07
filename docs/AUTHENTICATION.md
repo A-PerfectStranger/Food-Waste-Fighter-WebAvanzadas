@@ -9,7 +9,8 @@ Se implementa autenticación en el mismo monolito Express/EJS. No se utilizan JW
 | `POST /auth/logout` | Validación CSRF, destrucción de sesión y borrado de cookie. No se permite GET. |
 | `GET/POST /auth/forgot` | Respuesta pública genérica; generación de enlace privado de 30 minutos, sin revelar la existencia de la cuenta en el texto de respuesta. |
 | `GET/POST /auth/reset` | Token aleatorio de 256 bits, hash SHA-256 en base de datos, consumo condicional en transacción y cambio Argon2id; revocación de sesiones previas. |
-| `GET /dashboard` | Cuenta protegida: empresa, nombre, correo y rol. Las métricas de inventario se implementarán en fase 3. |
+| `GET /dashboard` | Dashboard protegido con métricas, alertas y recetas de fase 3. |
+| `GET /account` | Cuenta protegida: empresa, nombre, correo y rol; conserva la vista original de fase 2. |
 | `GET/POST /team` | Solo ADMIN. Listado limitado a la empresa actual y creación controlada de EMPLOYEE en esa misma empresa. |
 
 ## Sesión y autorización

@@ -26,7 +26,7 @@ Java 17 Maven WAR targets Jakarta Servlet 5 / Jakarta EE 10 with JSP/JSTL, Jerse
 
 ## Feature migration matrix
 
-Paths below are relative to the original `Food_Waste_Fighter/src/main/`, except SQL at archive root. All target business modules remain TODO until verified in PROGRESS.md.
+Paths below are relative to the original `Food_Waste_Fighter/src/main/`, except SQL at archive root. Implementation status and verification are recorded in PROGRESS.md; the table preserves the initial migration decisions.
 
 | Original evidence | Useful behavior | New monolith equivalent | Phase / decision |
 | --- | --- | --- | --- |
@@ -95,3 +95,16 @@ Phase 1 was merged through PR #1 after runtime tests and project-owner confirmat
 The project owner explicitly requested reuse of the supplied HTML to retain the appearance. `landing.html`, authentication JSP markup and the original stylesheet are adapted to EJS/local CSS; Inter and the Tailwind 3 green/gray palette are retained. Duplicate document tags and unsubstantiated landing statistics are removed. Native scripts are moved to local files for CSP. This supersedes the initial plan to introduce a separate foundation visual design; business screens in Phase 3 will continue this same identity.
 
 The seed now contains the complete synthetic model slice. Initial user passwords are random/discarded, so access uses private simulated password recovery; rerunning the seed preserves existing accounts/passwords. Inventory/recipe/chat schema and seed do not imply that their Phase 3/4 functionality has been built.
+
+## Phase 3 continuation — 2026-11-07
+
+Remote main `bedcdc1` includes accepted/merged Phase 2. A newly supplied copy of
+the ZIP was inspected again, including the business JSPs, controllers and CSS.
+The phase 3 implementation reuses those layouts and the unchanged legacy CSS;
+[BUSINESS_FUNCTIONALITY.md](BUSINESS_FUNCTIONALITY.md) maps source templates to
+EJS and documents dates, permissions, queries and deliberate corrections.
+
+The existing schema is sufficient; there are no phase 3 migrations or new npm
+dependencies. Core CRUD/dashboard/recipes/expiration behavior is implemented;
+chat, live notifications and their navigation remain phase 4. Optional nutrition,
+images and preparation metadata absent from the current model are not fabricated.

@@ -1,5 +1,6 @@
 @import "tailwindcss" source(none);
 @source "../views";
+@source "../modules/expiration/expiration.js";
 
 @import "./legacy.css";
 
@@ -33,4 +34,25 @@
   --color-gray-700: #374151;
   --color-gray-800: #1f2937;
   --color-gray-900: #111827;
+  --color-red-50: #fef2f2;
+  --color-red-100: #fee2e2;
+  --color-red-500: #ef4444;
+  --color-red-600: #dc2626;
+  --color-red-700: #b91c1c;
+  --color-red-800: #991b1b;
+  --color-yellow-50: #fefce8;
+  --color-yellow-500: #eab308;
+  --color-yellow-800: #854d0e;
+  --color-blue-50: #eff6ff;
+  --color-blue-500: #3b82f6;
+  --color-blue-700: #1d4ed8;
+  --color-blue-800: #1e40af;
+  --color-blue-900: #1e3a8a;
+}
+
+/* Keyboard visibility and reduced motion do not change the original palette. */
+:focus-visible { outline: 2px solid #15803d; outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  .page-transition { animation: none; }
+  .btn-primary { transition: none; }
 }
