@@ -62,16 +62,16 @@ Paths below are relative to the original `Food_Waste_Fighter/src/main/`, except 
 
 ## Target architecture and technology decisions
 
-One Node.js 24 LTS JavaScript process owns Express, EJS routing, business services, Prisma, and (Phase 4) Socket.IO. MySQL is a separate dependency container, not a business microservice. Use Express 5, stable Prisma 7.10.1 + matching MySQL-compatible MariaDB driver adapter; npm's latest Prisma currently resolves to an 8 release candidate, so pin stable 7.10.1. Its published engine range includes Node 24. Prisma 7 datasource CLI configuration belongs in prisma.config.ts; runtime uses a driver adapter. Tailwind builds locally; no runtime CDN dependency. Node24, package-lock and npm ci make Codespaces repeatable.
+One Node.js 24 LTS JavaScript process owns Express, EJS routing, business services, Prisma, and Socket.IO (implemented in Phase 4). MySQL is a separate dependency container, not a business microservice. Use Express 5, stable Prisma 7.10.1 + matching MySQL-compatible MariaDB driver adapter; npm's latest Prisma currently resolves to an 8 release candidate, so pin stable 7.10.1. Its published engine range includes Node 24. Prisma 7 datasource CLI configuration belongs in prisma.config.ts; runtime uses a driver adapter. Tailwind builds locally; no runtime CDN dependency. Node24, package-lock and npm ci make Codespaces repeatable.
 
 ```mermaid
 flowchart TB
   Browser[Browser / Codespaces HTTPS port 3000] --> HTTP[Single Node24 HTTP server]
   HTTP --> Express[Express routers / middleware]
   Express --> EJS[EJS server-rendered HTML]
-  HTTP -. Phase 4 .-> Socket[Socket.IO / session handshake]
+  HTTP --> Socket[Socket.IO / session handshake]
   Express --> Services[Modular business services]
-  Socket -. Phase 4 .-> Services
+  Socket --> Services
   Services --> Prisma[Prisma repositories]
   Prisma --> MySQL[(MySQL8: business data + persistent sessions)]
 ```
@@ -108,3 +108,16 @@ The existing schema is sufficient; there are no phase 3 migrations or new npm
 dependencies. Core CRUD/dashboard/recipes/expiration behavior is implemented;
 chat, live notifications and their navigation remain phase 4. Optional nutrition,
 images and preparation metadata absent from the current model are not fabricated.
+
+
+## Phase 4 continuation — 2026-11-07
+
+Fresh origin/main `2d49858` contains the merged Phase 3 implementation (PR #3).
+The existing ChatRoom/ChatMessage/Session schema and indexes support Phase 4
+without a migration. Socket.IO 4 now shares the production HTTP server and exact
+Express session middleware. The General room, paginated history, presence,
+strict authenticated events and post-persistence inventory notifications are
+implemented in the monolith. [REALTIME.md](REALTIME.md) documents handshake,
+origin/proxy handling, session revocation, events, limits and transport fallback.
+The earlier Phase 2/3 paragraphs describe their historical scope. Real forwarded
+Codespaces wss acceptance, performance and academic delivery remain Phase 5.

@@ -1,4 +1,4 @@
-<% const links = [['/dashboard', 'Dashboard'], ['/inventory', 'Mi Inventario'], ['/recipes', 'Recetas'], ['/expiration', 'Por Caducar'], ['/categories', 'Categorías'], ['/account', 'Mi cuenta']]; if (currentUser.role === 'ADMIN') links.push(['/team', 'Equipo']); %>
+<% const links = [['/dashboard', 'Dashboard'], ['/inventory', 'Mi Inventario'], ['/recipes', 'Recetas'], ['/expiration', 'Por Caducar'], ['/categories', 'Categorías'], ['/chat', 'Chat'], ['/account', 'Mi cuenta']]; if (currentUser.role === 'ADMIN') links.push(['/team', 'Equipo']); %>
 <!-- Adapted from components/navbar.jsp; logout remains a CSRF-protected POST. -->
 <a href="#main-content" class="sr-only focus:not-sr-only focus:block focus:p-3">Saltar al contenido</a>
 <nav class="bg-white shadow-sm sticky top-0 z-50" aria-label="Navegación principal">
@@ -16,3 +16,4 @@
     <form method="post" action="/auth/logout"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="px-3 py-2 text-red-700 font-medium">Cerrar Sesión</button></form>
   </div></div>
 </nav>
+<div id="inventory-live" class="hidden max-w-7xl mx-auto px-4 py-3 bg-green-50 text-green-800 border-b border-green-200" role="status" aria-live="polite"><span id="inventory-live-text"></span> <a href="/inventory" class="underline font-semibold">Ver inventario</a></div>
