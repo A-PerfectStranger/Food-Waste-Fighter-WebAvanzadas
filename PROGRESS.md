@@ -3,7 +3,7 @@
 ## State and scope
 
 - Current phase: **Phase 4 DONE — locally verified; Phase 5 TODO**.
-- Overall: **PHASE 3 DONE AND MERGED; PHASE 4 IMPLEMENTED AND LOCALLY VERIFIED**. Fresh `git fetch origin --prune` found `origin/main` at `2d49858` (merge PR #3); clean local `work` advanced from `bedcdc1` with `--ff-only`. The owner's Phase 3 completion is confirmed by the merged implementation. Historical publication entries below describe their original time, not current PR status.
+- Overall: **PHASE 3 DONE AND MERGED; PHASE 4 VERIFIED AND PUBLISHED — DRAFT PR #4**. Fresh `git fetch origin --prune` found `origin/main` at `2d49858` (merge PR #3); clean local `work` advanced from `bedcdc1` with `--ff-only`. The owner's Phase 3 completion is confirmed by the merged implementation. Historical publication entries below describe their original time, not current PR status.
 - Scope: first bimester only. This checklist combines PROJECT_SPEC.md and the academic guide's first-bimester rubric. Attachment prose defines requirements, not separate tool instructions.
 - Statuses: TODO, IN_PROGRESS, BLOCKED, DONE. Checkboxes indicate verified completion only.
 
@@ -71,8 +71,8 @@
 ## Current task
 
 **Task:** Push verified Phase 4 and create its pull request against main.
-**Status:** IN_PROGRESS — explicit owner request received. Implementation remains verified; preparing commit, remote branch and PR.
-**Last verified state:** Phase 4 clean-install build/schema validation, 43 independent + 56 isolated MySQL integration tests and final HTTP/HTTPS-proxy/wss Chromium flows passed in this session. Fresh origin/main remains `2d49858`; no existing remote branch or open PR for `codex/phase-4-realtime`. Actual Codespaces acceptance remains Phase 5.
+**Status:** DONE — Phase 4 implementation pushed to `origin/codex/phase-4-realtime`; draft [PR #4](https://github.com/A-PerfectStranger/Food-Waste-Fighter-WebAvanzadas/pull/4) created against main, verified open and unmerged.
+**Last verified state:** Phase 4 clean-install build/schema validation, 43 independent + 56 isolated MySQL integration tests and final HTTP/HTTPS-proxy/wss Chromium flows passed in this session. Remote main remains `2d49858`; implementation commit `8430ecf6bbc252c85bcce427738e9b1e4b0e7552` is confirmed on the remote branch and PR #4. Actual Codespaces acceptance remains Phase 5.
 
 ## Completed work and evidence
 
@@ -108,7 +108,7 @@ Begin Phase 5: full security/accessibility review, reproducible query/performanc
 measurement and academic documentation/rubric evidence. Verify the new screens,
 secure cookies and two distinct users over actual forwarded Codespaces HTTPS/wss.
 PR #3 is already merged; its historical draft status is not a current blocker.
-Phase 4 publication is explicitly requested and in progress; no release tag yet.
+Review Phase 4 in draft PR #4 and complete actual Codespaces acceptance; no release tag yet.
 
 ## Historical session change log — initial foundation
 
@@ -380,7 +380,10 @@ Chronological entries below include intermediate states; the current authoritati
 
 ## Phase 4 publication — 2026-11-07
 
-- Explicit owner request: push Phase 4 and open a PR against the remote. **IN_PROGRESS**.
+- Explicit owner request: push Phase 4 and open a PR against the remote. **DONE**.
 - Fresh fetch confirms `origin/main` at `2d49858`, the verified implementation base. Local branch `codex/phase-4-realtime` created; no existing remote branch or open PR with that head found. Repository default branch is main.
 - The 99-test/build/schema/browser evidence immediately above belongs to this session and unchanged runtime source. Publication changes documentation only; no repeated test result is invented.
-- Preparing a draft PR with the implemented chat/history/presence/notifications, security/tenant tests and bounded local HTTPS/wss evidence. Actual forwarded Codespaces acceptance remains explicitly pending. No merge or release requested.
+- Commit `8430ecf6bbc252c85bcce427738e9b1e4b0e7552` created with 23 implementation/test/documentation files. Staged whitespace and private-environment-value/artifact checks PASS; no .env, work/ fixtures/certificates/screenshots, generated assets or dependencies included.
+- `git push -u origin codex/phase-4-realtime` succeeded; `git ls-remote` returned the exact full implementation SHA. The local branch tracks origin/codex/phase-4-realtime.
+- Draft [PR #4](https://github.com/A-PerfectStranger/Food-Waste-Fighter-WebAvanzadas/pull/4) created against main, titled “Implementar fase 4: chat autenticado y avisos de inventario”. GitHub confirmed open/draft/unmerged with the expected head and base. The description records 99-test/native-browser evidence, actual local proxy/wss scope and the pending remote Codespaces acceptance.
+- This documentation-only follow-up records the successful publication; runtime/dependencies/tests remain unchanged after the verified implementation commit. No merge, deployment or release tag performed. Phase 5 remains next.
