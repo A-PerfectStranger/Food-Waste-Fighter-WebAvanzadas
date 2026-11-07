@@ -22,7 +22,7 @@ La sesión caducada se elimina al consultarse. Los campos sensibles no se incluy
 
 ## Protección de formularios
 
-Cada sesión dispone de un token CSRF aleatorio. Todas las mutaciones exigen ese token, con comparación de longitud de bytes y comparación constante; se rechazan valores multibyte de longitud incompatible. Los orígenes ajenos se rechazan. Chromium puede enviar `Origin: null` en formularios nativos bajo Referrer-Policy:no-referrer; ese caso solo se acepta con `Sec-Fetch-Site: same-origin` y token CSRF válido. Una petición opaca cross-site se rechaza.
+Cada sesión dispone de un token CSRF aleatorio. Todas las mutaciones exigen ese token, con comparación de longitud de bytes y comparación constante; se rechazan valores multibyte de longitud incompatible. Los orígenes ajenos se rechazan. Chromium puede enviar `Origin: null` en formularios nativos bajo Referrer-Policy:no-referrer; si se recibe Fetch Metadata, se exige `same-origin` para ese caso. Si el navegador o el proxy omiten ese encabezado opcional, se acepta únicamente con el token CSRF válido vinculado a la sesión. Una petición sin cookie de sesión o con token incorrecto se rechaza. Los orígenes explícitos ajenos y la metadata `cross-site` se rechazan incluso si se presenta un token válido.
 
 Zod valida tipos, longitudes, correo, confirmación y campos desconocidos en el servidor. HTML5 valida campos requeridos, formato, límites y longitud; el JavaScript local valida la confirmación. EJS escapa los valores persistidos y los mensajes.
 

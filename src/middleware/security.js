@@ -10,11 +10,13 @@ export function csrfProtection(config) {
     const provided = req.body?._csrf;
     const expected = req.session.csrfToken;
     const requestOrigin = req.get('Origin');
+    const fetchSite = req.get('Sec-Fetch-Site');
     // With Helmet's no-referrer policy Chromium uses Origin: null on native form
-    // navigations. Accept that case only with same-origin Fetch Metadata; the
-    // synchronizer token is still mandatory and compared below.
-    const sameOrigin = !requestOrigin || requestOrigin === origin ||
-      (requestOrigin === 'null' && req.get('Sec-Fetch-Site') === 'same-origin');
+    // navigations. Fetch Metadata is optional and may be removed by a proxy.
+    // When absent, the session-bound synchronizer token remains authoritative;
+    // explicit cross-site metadata and foreign origins are still rejected.
+    const sameOrigin = fetchSite !== 'cross-site' && (!requestOrigin || requestOrigin === origin ||
+      (requestOrigin === 'null' && (!fetchSite || fetchSite === 'same-origin')));
     if (!sameOrigin || typeof provided !== 'string' || provided.length !== expected.length ||
         Buffer.byteLength(provided) !== Buffer.byteLength(expected) ||
         !timingSafeEqual(Buffer.from(provided), Buffer.from(expected))) {

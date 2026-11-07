@@ -141,6 +141,7 @@ describe('Phase 2 real MySQL authentication and tenant boundaries', () => {
     expect((await agent.post('/auth/logout').type('form').send({})).status).toBe(403);
     expect((await post(agent, '/auth/logout', {}, 'ñ'.repeat(64))).status).toBe(403);
     expect((await agent.post('/auth/logout').set('Origin', 'https://attacker.example').type('form').send({ _csrf: token })).status).toBe(403);
+    expect((await agent.post('/auth/logout').set('Sec-Fetch-Site', 'cross-site').type('form').send({ _csrf: token })).status).toBe(403);
   });
   it('supports native no-referrer form navigation while rejecting opaque cross-site requests', async () => {
     const agent = trackedAgent(app);
@@ -156,6 +157,37 @@ describe('Phase 2 real MySQL authentication and tenant boundaries', () => {
     expect(response.status).toBe(200);
     expect(response.headers['set-cookie'][0]).toContain('; Secure');
     expect(response.headers['cache-control']).toBe('no-store');
+  });
+  it('logs in and out through trusted HTTPS when the proxy omits Fetch Metadata', async () => {
+    const { user } = await account();
+    const httpsApp = makeApp(parseEnv({ ...process.env, APP_ORIGIN: 'https://demo.app.github.dev', TRUST_PROXY: '1' }));
+    const form = remember(await request(httpsApp).get('/auth/login').set('X-Forwarded-Proto', 'https'));
+    const anonymousCookie = form.headers['set-cookie'][0].split(';')[0];
+    const token = form.text.match(/name="_csrf" value="([a-f0-9]{64})"/)[1];
+    const withoutCookie = remember(await request(httpsApp).post('/auth/login')
+      .set('X-Forwarded-Proto', 'https').set('Origin', 'null')
+      .type('form').send({ _csrf: token, email: user.email, password }));
+    expect(withoutCookie.status).toBe(403);
+    const invalidToken = await request(httpsApp).post('/auth/login')
+      .set('X-Forwarded-Proto', 'https').set('Origin', 'null').set('Cookie', anonymousCookie)
+      .type('form').send({ _csrf: '0'.repeat(64), email: user.email, password });
+    expect(invalidToken.status).toBe(403);
+    const response = remember(await request(httpsApp).post('/auth/login')
+      .set('X-Forwarded-Proto', 'https').set('Origin', 'null').set('Cookie', anonymousCookie)
+      .type('form').send({ _csrf: token, email: user.email, password }));
+    expect(response.status).toBe(303);
+    expect(response.headers.location).toBe('/dashboard');
+    const cookie = response.headers['set-cookie'][0].split(';')[0];
+    expect(cookie).not.toBe(anonymousCookie);
+    expect(response.headers['set-cookie'][0]).toContain('; Secure');
+    const dashboard = remember(await request(httpsApp).get('/dashboard').set('X-Forwarded-Proto', 'https').set('Cookie', cookie));
+    expect(dashboard.status).toBe(200);
+    const csrf = dashboard.text.match(/name="_csrf" value="([a-f0-9]{64})"/)[1];
+    const logout = await request(httpsApp).post('/auth/logout')
+      .set('X-Forwarded-Proto', 'https').set('Origin', 'null').set('Cookie', cookie)
+      .type('form').send({ _csrf: csrf });
+    expect(logout.status).toBe(303);
+    expect((await request(httpsApp).get('/dashboard').on('response', remember).set('X-Forwarded-Proto', 'https').set('Cookie', cookie)).headers.location).toBe('/auth/login');
   });
   it('limits repeated login attempts', async () => {
     const agent = trackedAgent(app);
