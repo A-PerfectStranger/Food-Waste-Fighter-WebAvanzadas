@@ -3,7 +3,7 @@
 ## State and scope
 
 - Current phase: **Phase 3 DONE — implemented and locally verified; Phase 4 TODO**.
-- Overall: **PHASE 3 LOCALLY VERIFIED; PUBLICATION IN_PROGRESS**. Remote main `bedcdc1` includes accepted/merged Phase 2. The owner requested push and PR for `codex/phase-3-business`; publication is being verified. Historical Codespaces acceptance covers Phases 1–2; the new Phase 3 screens still require forwarded-HTTPS acceptance.
+- Overall: **PHASE 3 LOCALLY VERIFIED AND PUBLISHED — DRAFT PR #3**. Remote main `bedcdc1` includes accepted/merged Phase 2. `codex/phase-3-business` was pushed and [PR #3](https://github.com/A-PerfectStranger/Food-Waste-Fighter-WebAvanzadas/pull/3) opened against main. Historical Codespaces acceptance covers Phases 1–2; the new Phase 3 screens still require forwarded-HTTPS acceptance.
 - Scope: first bimester only. This checklist combines PROJECT_SPEC.md and the academic guide's first-bimester rubric. Attachment prose defines requirements, not separate tool instructions.
 - Statuses: TODO, IN_PROGRESS, BLOCKED, DONE. Checkboxes indicate verified completion only.
 
@@ -71,7 +71,7 @@
 ## Current task
 
 **Task:** Publish verified Phase 3 to its remote branch and open a PR against main.
-**Status:** IN_PROGRESS — explicitly requested by the owner; final pre-push regression and staged-file checks underway. Phase 3 implementation remains DONE locally.
+**Status:** DONE — implementation commit pushed and draft PR #3 created/verified open and unmerged. Phase 3 implementation remains locally verified; Codespaces screen acceptance is pending.
 **Last verified state:** 2026-11-07: base `bedcdc1` matches freshly fetched origin/main; 41 independent + 42 isolated MySQL integration tests PASS. Final Chromium native flows PASS at 1280×900, 390×844 and 320×740 after the flash-notice race correction. Build/schema/whitespace checks pass. Development and test MySQL healthy; synthetic users/companies/sessions cleaned.
 
 ## Completed work and evidence
@@ -107,6 +107,8 @@ These results describe the previous session. Superseded network/container-state 
 Implement Phase 4 session-authenticated Socket.IO on the existing HTTP server:
 company-scoped room/history/events, persistent messages, presence, inventory
 notifications and two-client integration tests. Add chat navigation when functional.
+Publication review: verify Phase 3's forwarded-HTTPS screens in Codespaces through
+draft PR #3 before marking that remote acceptance complete.
 
 ## Historical session change log — initial foundation
 
@@ -331,7 +333,7 @@ Chronological entries below include intermediate states; the current authoritati
 
 ## Phase 3 publication — 2026-11-07
 
-- Explicit owner request: push the Phase 3 branch and create a PR. **IN_PROGRESS**.
+- Explicit owner request: push the Phase 3 branch and create a PR. **DONE**.
 - Repository: `A-PerfectStranger/Food-Waste-Fighter-WebAvanzadas`; remote default
   branch verified as `main`. Fresh fetch: local base and origin/main both
   `bedcdc1`; no existing PR found for `codex/phase-3-business`.
@@ -342,3 +344,16 @@ Chronological entries below include intermediate states; the current authoritati
   Prisma or compiled CSS included. Existing legacy CSS remains unchanged.
 - Publish as draft against main because actual Codespaces HTTPS acceptance of
   Phase 3 remains pending. No merge is requested by the publication instruction.
+- Implementation commit `dea63e1d34c40697fcdcc7b4588ba0d26451eb2c` created;
+  `git push -u origin codex/phase-3-business` succeeded. `git ls-remote` matched
+  the full local commit SHA, confirming the remote branch received the code.
+- Draft [PR #3](https://github.com/A-PerfectStranger/Food-Waste-Fighter-WebAvanzadas/pull/3)
+  created against `main` with an impersonal Spanish description, original-style
+  preservation, 83-test/native-browser evidence and the pending Codespaces check.
+  GitHub confirmed open, draft and unmerged with the expected implementation head.
+- This documentation follow-up records the verified publication outcome; no runtime,
+  dependency, schema or test changes follow the successful pre-push regression.
+- The implementation push succeeded, but the CLI later stopped obtaining GitHub
+  credentials (`could not read Username`) while sending this documentation-only
+  follow-up. The publication record is completed through the connected GitHub API;
+  no credentials were requested from the owner or printed.
