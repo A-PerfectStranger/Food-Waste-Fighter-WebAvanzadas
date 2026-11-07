@@ -114,6 +114,10 @@ After the user resolves access, resume at the missing dependency: `npm ci` → `
 
 ## Git publication task — 2026-11-07
 
-- User explicitly requested a remote push and pull request. **Status: IN_PROGRESS.**
+- User explicitly requested a remote push and pull request. **Status: DONE.**
 - Feature branch: `codex/phase-1-foundation`; target: `main` in `A-PerfectStranger/Food-Waste-Fighter-WebAvanzadas` (remote default branch verified).
 - Publish the verified Phase 1 foundation as a draft PR because Prisma/client/migrations/full startup remain blocked. Do not merge or mark Phase 1 complete.
+- Commit `fcb4725` contains the Phase 1 foundation; `git push -u origin codex/phase-1-foundation` succeeded.
+- Draft PR [#1](https://github.com/A-PerfectStranger/Food-Waste-Fighter-WebAvanzadas/pull/1) opened against `main`; GitHub confirmed it is open, draft and unmerged.
+- Pre-push `npm test`: 14/14 passed (258ms); staged diff/secret checks passed. Existing Prisma/network and Codespaces verification limits remain unchanged.
+- This documentation follow-up records the completed publication task. Development's next action remains the blocked Phase 1 persistence/startup verification described above.
