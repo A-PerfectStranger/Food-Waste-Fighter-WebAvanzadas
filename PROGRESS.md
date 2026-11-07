@@ -2,8 +2,8 @@
 
 ## State and scope
 
-- Current phase: **Phase 2 — Authentication fix verified; Codespaces retest pending**. Phase 1 is merged; PR #2 remains unmerged.
-- Overall: **PHASE 2 FIX VERIFIED LOCALLY / CODESPACES RETEST PENDING**. A forwarded-HTTPS regression reproduced HTTP403 when Chrome sends Origin:null and optional Fetch Metadata is omitted. The correction retains session-bound constant-time CSRF validation, Secure cookies and rejection of explicit cross-site/foreign-origin requests. Actual confirmation on the project owner's Codespace is still required; no Phase 2 merge has occurred.
+- Current phase: **Phase 2 — Persistent authentication rejection investigation IN_PROGRESS**. Phase 1 is merged; PR #2 remains unmerged.
+- Overall: **CODESPACES LOGIN/REGISTRATION REJECTION UNRESOLVED; SAFE DIAGNOSTICS VERIFIED**. The project owner confirms2426631 in normal Chrome and still receives403. Local44-test and HTTPS-proxy checks pass, but the actual rejection gate requires the new reference/runtime event from that Codespace. PR #2 remains unmerged; no claim that the remote problem is fixed.
 - Scope: first bimester only. This checklist combines PROJECT_SPEC.md and the academic guide's first-bimester rubric. Attachment prose defines requirements, not separate tool instructions.
 - Statuses: TODO, IN_PROGRESS, BLOCKED, DONE. Checkboxes indicate verified completion only.
 
@@ -69,10 +69,10 @@
 
 ## Current task
 
-**Task:** Correct and publish the forwarded-HTTPS login rejection in PR #2.
-**Status:** Fix and regression verification DONE; changes prepared for existing PR #2. Actual Codespaces retest pending.
-**Files:** `src/middleware/security.js`, `tests/auth.integration.test.js`, `docs/AUTHENTICATION.md`, and this log.
-**Last verified state:** New regression reproduced403 before the correction. After correction,18 independent +25 integration tests and real Chrome through a local HTTPS reverse proxy pass, including the final explicit-cross-site guard. No schema, credentials, cookie-security or appearance changes.
+**Task:** Identify the remaining real login/registration rejection without assuming the earlier local proxy reproduction explains it.
+**Status:** Diagnostic implementation/verification DONE; actual diagnosis BLOCKED pending the safe rejection reference from the project-owner Codespace. Running checkout2426631 and normal Chrome were confirmed. No further authentication acceptance-rule change was made.
+**Files:** CSRF middleware/error diagnostics, regression tests, documentation and this log.
+**Last verified state:** Final `npm test`18/18 and `npm run test:db`26/26 PASS (44 total); runtime/error diagnostic redaction checked; real Chrome HTTPS-proxy login/logout PASS. These fixtures do not establish successful authentication in the project-owner Codespace.
 
 ## Completed work and evidence
 
@@ -103,7 +103,7 @@ These results describe the previous session. Superseded network/container-state 
 
 ## Next action
 
-Review PR #2 and verify the new authentication/forms in actual Codespaces. No Phase 2 merge has been performed; clean-install regression has passed. The next implementation phase is tenant-scoped inventory CRUD/dashboard/recipes, reusing the original JSP/HTML/CSS identity. Actual Codespaces authentication/cookie/form testing is required before final bimester delivery.
+Update the Codespace to the new PR #2 diagnostic commit, restart its server, submit a fresh login/registration form, and capture only the displayed `FWF_*` reference (or the sanitized `form_rejected` JSON line). Use that observed reason to correct the actual cause. No cookies, passwords, reset links or complete headers/.env are required. Phase3 and PR #2 merge remain pending.
 
 ## Historical session change log — initial foundation
 
@@ -196,3 +196,12 @@ Chronological entries below include intermediate states; the current authoritati
 - Final regression: `npm test` →18/18 PASS; `npm run test:db` →25/25 PASS (15.89s); proxy browser fixture →PASS; `git diff --check` →PASS. No HTML/CSS, database migration, dependency or secret changes.
 
 - Existing PR #2 receives this focused four-file correction; no migration, dependency update or merge is required. Retest procedure: update `codex/phase-2-authentication`, restart the server, reopen `/auth/login`, and submit a fresh form. The project-owner Codespaces result remains pending until confirmed.
+
+## Persistent form rejection — 2026-11-07
+
+- IN_PROGRESS: the project owner reports the rejection in both login and registration. No confirmation that the actual running process includes2426631 is available yet; branch origin does contain that commit. The earlier proxy hypothesis is not treated as a confirmed remote diagnosis.
+- Current generic403 message conflates origin/header rejection, absent cookies, expired/unrecognized session and mismatching form token. Rejection diagnostics will identify the gate while withholding credentials, cookie/token values and reset URLs.
+
+- The project owner confirmed the running checkout is2426631 and the application is opened in a normal Chrome tab, not an embedded VS Code preview. No stale-version or embedded-preview explanation is assumed.
+- Added safe rejection references distinguishing absent cookie, unrecognized session, origin rejection, missing token and changed token. Runtime diagnostic JSON contains only the reference, HTTPS/proxy/origin booleans and a whitelisted Fetch Metadata classification; no body/query/credentials/cookies/session IDs/tokens. Existing acceptance rules are retained.
+- Regression verifies each diagnostic, secret-free error output and secret-free runtime logging, while the real HTTPS-proxy login/logout fixture continues to pass. Final suites PASS:18 independent +26 integration tests (15.43s), proxy browser fixture PASS, `git diff --check` PASS. Remote root cause remains unconfirmed until the diagnostic reference is supplied.

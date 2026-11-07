@@ -39,3 +39,19 @@ En Codespaces puede solicitarse recuperación para `admin@semilla.example` o `eq
 Se adaptan los archivos suministrados `landing.html`, `login.jsp`, `registro.jsp` y `css/styles.css` a EJS y CSS local. Se conservan la distribución de tarjetas, el logo SVG, los tonos verdes/grises originales y la fuente Inter. Se mantienen los valores de la paleta Tailwind 3 original al compilar con Tailwind 4. Los scripts inline/CDN se trasladan a archivos locales para cumplir CSP. Se corrige el documento duplicado de la portada y se retiran estadísticas ficticias sin evidencia; las nuevas pantallas reutilizan los mismos componentes.
 
 Inter se sirve desde `@fontsource/inter`, con licencia SIL Open Font License incluida en el paquete. Los originales proceden del ZIP aportado por el proyecto; no se atribuye su autoría a la herramienta de IA.
+
+## Diagnóstico de un formulario rechazado
+
+El403 mantiene la protección y muestra una referencia sin datos sensibles:
+
+| Referencia | Situación observada por el servidor |
+| --- | --- |
+| `FWF_SESSION_COOKIE_MISSING` | No llegó la cookie de la aplicación; pueden intervenir políticas del navegador o el reconocimiento de HTTPS del proxy. |
+| `FWF_SESSION_UNAVAILABLE` | Llegó una cookie, pero no se recuperó una sesión con token previo (por ejemplo, cookie inválida, sesión eliminada o caducada). |
+| `FWF_FORM_ORIGIN_REJECTED` | El origen o Fetch Metadata no superó la comprobación. |
+| `FWF_FORM_TOKEN_MISSING` | El formulario no incluyó un token de texto. |
+| `FWF_FORM_TOKEN_CHANGED` | El token no corresponde a la sesión actual; puede ocurrir después de regenerar la sesión en otra pestaña. |
+
+En ejecución de desarrollo/producción se registra `form_rejected` con la referencia y banderas de HTTPS/proxy/origen, además del tipo de Fetch Metadata. No se registran contraseñas, correos, cuerpo, parámetros de URL, valores de cookie, identificadores de sesión ni tokens. Se puede compartir esa referencia o la línea JSON de ese evento para diagnosticar el fallo. No se deben compartir cabeceras completas ni archivos .env.
+
+La recepción de ese403 ocurre antes de procesar el registro o validar las credenciales: esa petición rechazada no crea una cuenta ni inicia sesión.

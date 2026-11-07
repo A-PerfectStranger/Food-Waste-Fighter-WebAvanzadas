@@ -4,6 +4,7 @@ export function csrfProtection(config) {
   const origin = new URL(config.APP_ORIGIN).origin;
   return (req, res, next) => {
     res.set('Cache-Control', 'no-store');
+    const hadSessionToken = typeof req.session.csrfToken === 'string';
     if (!req.session.csrfToken) req.session.csrfToken = randomBytes(32).toString('hex');
     res.locals.csrfToken = req.session.csrfToken;
     if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) return next();
@@ -17,10 +18,33 @@ export function csrfProtection(config) {
     // explicit cross-site metadata and foreign origins are still rejected.
     const sameOrigin = fetchSite !== 'cross-site' && (!requestOrigin || requestOrigin === origin ||
       (requestOrigin === 'null' && (!fetchSite || fetchSite === 'same-origin')));
-    if (!sameOrigin || typeof provided !== 'string' || provided.length !== expected.length ||
-        Buffer.byteLength(provided) !== Buffer.byteLength(expected) ||
-        !timingSafeEqual(Buffer.from(provided), Buffer.from(expected))) {
-      return res.status(403).render('error', { title: 'Solicitud rechazada', message: 'La sesión del formulario caducó. Vuelve a abrir la página e inténtalo de nuevo.' });
+    const validToken = typeof provided === 'string' && provided.length === expected.length &&
+      Buffer.byteLength(provided) === Buffer.byteLength(expected) &&
+      timingSafeEqual(Buffer.from(provided), Buffer.from(expected));
+    if (!sameOrigin || !validToken) {
+      const cookiePresent = /(?:^|;\s*)fwf\.sid=/.test(req.get('Cookie') || '');
+      const errorCode = !cookiePresent ? 'FWF_SESSION_COOKIE_MISSING'
+        : !hadSessionToken && !req.session.auth ? 'FWF_SESSION_UNAVAILABLE'
+        : !sameOrigin ? 'FWF_FORM_ORIGIN_REJECTED'
+        : typeof provided !== 'string' ? 'FWF_FORM_TOKEN_MISSING'
+        : 'FWF_FORM_TOKEN_CHANGED';
+      const messages = {
+        FWF_SESSION_COOKIE_MISSING: 'El navegador no envió la cookie de sesión. Abre la aplicación en una pestaña independiente y comprueba que permita las cookies de este sitio.',
+        FWF_SESSION_UNAVAILABLE: 'No se pudo recuperar la sesión del formulario. Vuelve a abrir la página e inténtalo de nuevo.',
+        FWF_FORM_ORIGIN_REJECTED: 'La dirección de acceso del formulario no coincide con la configuración del servicio. Abre la aplicación desde su dirección habitual en una pestaña independiente.',
+        FWF_FORM_TOKEN_MISSING: 'El formulario está incompleto. Vuelve a abrir la página e inténtalo de nuevo.',
+        FWF_FORM_TOKEN_CHANGED: 'La sesión del formulario cambió o caducó. Vuelve a abrir la página e inténtalo de nuevo.',
+      };
+      // Deliberately exclude body, query string, cookie/session identifiers and
+      // credential/token values. The reference is safe to share for diagnosis.
+      if (config.NODE_ENV !== 'test') console.warn(JSON.stringify({
+        event: 'form_rejected', code: errorCode, secureRequest: req.secure,
+        trustedProxyEnabled: Boolean(config.trustProxy),
+        forwardedHttps: req.get('X-Forwarded-Proto')?.split(',')[0].trim() === 'https',
+        originMatches: requestOrigin === origin, opaqueOrigin: requestOrigin === 'null',
+        fetchSite: ['same-origin', 'same-site', 'cross-site', 'none'].includes(fetchSite) ? fetchSite : 'absent-or-other',
+      }));
+      return res.status(403).render('error', { title: 'Solicitud rechazada', message: messages[errorCode], errorCode });
     }
     next();
   };

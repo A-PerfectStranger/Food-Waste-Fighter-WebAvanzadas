@@ -1,4 +1,4 @@
-import { afterAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { randomUUID } from 'node:crypto';
 import { createApp } from '../src/app.js';
@@ -142,6 +142,39 @@ describe('Phase 2 real MySQL authentication and tenant boundaries', () => {
     expect((await post(agent, '/auth/logout', {}, 'ñ'.repeat(64))).status).toBe(403);
     expect((await agent.post('/auth/logout').set('Origin', 'https://attacker.example').type('form').send({ _csrf: token })).status).toBe(403);
     expect((await agent.post('/auth/logout').set('Sec-Fetch-Site', 'cross-site').type('form').send({ _csrf: token })).status).toBe(403);
+  });
+  it('distinguishes rejected forms without revealing credentials or session/token values', async () => {
+    const agent = trackedAgent(app);
+    const token = await csrf(agent);
+    const secret = 'private-password-not-for-output';
+    const missingCookie = remember(await request(app).post('/auth/login').type('form').send({ _csrf: token, password: secret }));
+    expect(missingCookie.text).toContain('FWF_SESSION_COOKIE_MISSING');
+    const unknownSession = remember(await request(app).post('/auth/login').set('Cookie', 'fwf.sid=s%3Ainvalid.invalid').type('form').send({ _csrf: token, password: secret }));
+    expect(unknownSession.text).toContain('FWF_SESSION_UNAVAILABLE');
+    const wrongToken = await post(agent, '/auth/login', { password: secret }, '0'.repeat(64));
+    expect(wrongToken.text).toContain('FWF_FORM_TOKEN_CHANGED');
+    const missingToken = await agent.post('/auth/login').type('form').send({ password: secret });
+    expect(missingToken.text).toContain('FWF_FORM_TOKEN_MISSING');
+    const origin = await agent.post('/auth/login').set('Origin', 'https://other.example').type('form').send({ _csrf: token, password: secret });
+    expect(origin.text).toContain('FWF_FORM_ORIGIN_REJECTED');
+    for (const response of [missingCookie, unknownSession, wrongToken, missingToken, origin]) {
+      expect(response.status).toBe(403);
+      expect(response.text).not.toContain(secret);
+      expect(response.text).not.toContain(token);
+      expect(response.text).not.toContain(config.SESSION_SECRET);
+    }
+    const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      const developmentApp = makeApp(parseEnv({ ...process.env, NODE_ENV: 'development' }));
+      remember(await request(developmentApp).post('/auth/login?token=private-query-value')
+        .type('form').send({ _csrf: token, password: secret }));
+      expect(warning).toHaveBeenCalledOnce();
+      const logged = warning.mock.calls[0][0];
+      expect(JSON.parse(logged)).toMatchObject({ event: 'form_rejected', code: 'FWF_SESSION_COOKIE_MISSING' });
+      for (const privateValue of [secret, token, config.SESSION_SECRET, 'private-query-value']) {
+        expect(logged).not.toContain(privateValue);
+      }
+    } finally { warning.mockRestore(); }
   });
   it('supports native no-referrer form navigation while rejecting opaque cross-site requests', async () => {
     const agent = trackedAgent(app);
