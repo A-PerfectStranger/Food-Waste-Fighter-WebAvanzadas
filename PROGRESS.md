@@ -3,7 +3,7 @@
 ## State and scope
 
 - Current phase: **Phase 5 IN_PROGRESS — local technical work DONE; official cotejo/team delivery pending**.
-- Overall: **PHASES 1–4 ACCEPTED/MERGED; PHASE 5 QUALITY AND DOCUMENTATION VERIFIED**. The owner explicitly closed Phase 4 and authorized merge. PR #4 merged as `da6e1141989cc0898a79427d30e5746130d5a3df`; the environment now checks out main and tracks origin/main. The 99-test/local browser evidence and owner's acceptance are recorded separately from any future detailed remote traces.
+- Overall: **PHASES 1–4 ACCEPTED/MERGED; PHASE 5 VERIFIED AND PUBLISHED IN PR #5**. Main includes accepted Phase 4 (`da6e114`); Phase 5 is on `docs/phase-5-quality-delivery`, based on freshly verified `e6dfe81`. Local/remote publication is confirmed. The remaining official-source/team delivery tasks below are not marked complete; no Phase 4 gate is reopened.
 - Scope: first bimester only. This checklist combines PROJECT_SPEC.md and the academic guide's first-bimester rubric. Attachment prose defines requirements, not separate tool instructions.
 - Statuses: TODO, IN_PROGRESS, BLOCKED, DONE. Checkboxes indicate verified completion only.
 
@@ -73,8 +73,8 @@
 ## Current task
 
 **Task:** Publish verified Phase 5 quality/performance/documentation and open its PR from `docs/phase-5-quality-delivery`.
-**Status:** IN_PROGRESS — local work, regression, browser verification and reports complete; reviewing staged artifacts before commit/push/PR. Phase 5 remains open for the external/team actions listed above.
-**Last verified state:** Base e6dfe81 equals freshly fetched origin/main; no remote branch or open PR with this docs/ head existed. Clean npm ci (332 packages), build/schema, 50 independent + 56 integration tests PASS; 40 final browser scans PASS, measured report saved. Both databases contain zero temporary fixtures/sessions; development seed preserved. Owner-authorized placeholders and missing-source rubric mapping remain explicit.
+**Status:** DONE — verified implementation pushed to origin/docs/phase-5-quality-delivery and [PR #5](https://github.com/A-PerfectStranger/Food-Waste-Fighter-WebAvanzadas/pull/5) opened against main (ready for review, unmerged). Phase 5 remains open only for the listed source/team delivery actions and PR review.
+**Last verified state:** Implementation commit `2796ee923e6bd0e10bbd213deae4b299213fba8e` is confirmed on the remote docs/ branch and PR #5; base is e6dfe81. Clean npm ci (332 packages), build/schema, 50 independent + 56 integration tests PASS; 40 final browser scans PASS, measured report saved. Both databases contain zero temporary fixtures/sessions; development seed preserved. Owner-authorized placeholders and missing-source rubric mapping remain explicit.
 
 ## Completed work and evidence
 
@@ -106,7 +106,7 @@ These results describe the previous session. Superseded network/container-state 
 
 ## Next action
 
-Publish/review Phase 5 on `docs/phase-5-quality-delivery`. Complete official-guide
+Review Phase 5 in [PR #5](https://github.com/A-PerfectStranger/Food-Waste-Fighter-WebAvanzadas/pull/5), head `docs/phase-5-quality-delivery`. Complete official-guide
 cotejo, requested real team/course fields when available, detailed Codespaces
 acta and actual defense/submission using RELEASE_CHECKLIST.md. Phase 4 is closed;
 do not reintroduce its acceptance gate. No release tag or course submission yet.
@@ -432,3 +432,11 @@ Chronological entries below include intermediate states; the current authoritati
 
 - Final local HTTPS regression repeated against the Phase 5 templates/styles: real Chromium → Origin-rewriting loopback HTTPS proxy → shared HTTP/Socket.IO → test MySQL **PASS**. Secure/HttpOnly cookie, wss upgrade, three-user tenant isolation, persisted messages, notice without reload and logout/presence pass at 1280/390/320px; no page/CSP/external-request errors. This is still local evidence, not new Codespaces traffic.
 - Publication preflight: fresh main still `e6dfe81`, no remote docs/phase-5-quality-delivery branch/open PR; 29 staged source/script/test/doc/report files. Whitespace, local Markdown links/fences and exact private-environment-value/artifact checks PASS. No work/, secrets, certificates, outbox or generated assets are staged.
+
+
+### Phase 5 publication — DONE
+
+- Explicit owner instruction: push and open a PR using docs/ instead of codex/. Commit **`2796ee923e6bd0e10bbd213deae4b299213fba8e`** created on **docs/phase-5-quality-delivery** with 29 reviewed files; git push succeeded and ls-remote matched the exact SHA.
+- [PR #5](https://github.com/A-PerfectStranger/Food-Waste-Fighter-WebAvanzadas/pull/5), “Preparar fase 5: calidad, rendimiento y documentación académica”, created against main. GitHub confirmed open, ready for review (not draft), unmerged, expected head and base. Description includes 106 tests/40 browser scans, measured latency/scan limitation, higher contrast, team placeholders and missing official-guide cotejo.
+- The raw reports identify the pre-publication base+Phase5 working tree honestly; their exact versioned contents and the verified source/scripts are included in immutable implementation commit 2796ee9. This follow-up changes the publication record only, not runtime, tests, dependencies or measured data; no additional test result is invented.
+- Final test-database check after local HTTPS verification: **0 sessions and 0 temporary quality/perf/browser companies**. Development was not reset and the real app remains ready/database up. No merge, final tag, release or course submission performed. Requested placeholders remain intact.
