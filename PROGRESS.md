@@ -2,8 +2,8 @@
 
 ## State and scope
 
-- Current phase: **Phase 4 DONE — locally verified; Phase 5 TODO**.
-- Overall: **PHASE 3 DONE AND MERGED; PHASE 4 VERIFIED AND PUBLISHED — DRAFT PR #4**. Fresh `git fetch origin --prune` found `origin/main` at `2d49858` (merge PR #3); clean local `work` advanced from `bedcdc1` with `--ff-only`. The owner's Phase 3 completion is confirmed by the merged implementation. Historical publication entries below describe their original time, not current PR status.
+- Current phase: **Phase 4 DONE AND ACCEPTED — merge authorized; Phase 5 TODO**.
+- Overall: **PHASE 4 ACCEPTED BY THE OWNER; PR #4 MERGE AUTHORIZED**. The owner explicitly closed Phase 4 and requested immediate merge. This acceptance supersedes the earlier draft gate. The 99-test and local HTTP/HTTPS/wss evidence remains recorded; no new remote Codespaces traces are claimed.
 - Scope: first bimester only. This checklist combines PROJECT_SPEC.md and the academic guide's first-bimester rubric. Attachment prose defines requirements, not separate tool instructions.
 - Statuses: TODO, IN_PROGRESS, BLOCKED, DONE. Checkboxes indicate verified completion only.
 
@@ -70,9 +70,9 @@
 
 ## Current task
 
-**Task:** Push verified Phase 4 and create its pull request against main.
-**Status:** DONE — Phase 4 implementation pushed to `origin/codex/phase-4-realtime`; draft [PR #4](https://github.com/A-PerfectStranger/Food-Waste-Fighter-WebAvanzadas/pull/4) created against main, verified open and unmerged.
-**Last verified state:** Phase 4 clean-install build/schema validation, 43 independent + 56 isolated MySQL integration tests and final HTTP/HTTPS-proxy/wss Chromium flows passed in this session. Remote main remains `2d49858`; implementation commit `8430ecf6bbc252c85bcce427738e9b1e4b0e7552` is confirmed on the remote branch and PR #4. Actual Codespaces acceptance remains Phase 5.
+**Task:** Merge accepted Phase 4 PR #4 and synchronize the environment with remote main.
+**Status:** IN_PROGRESS — owner explicitly declared Phase 4 complete and authorized merge. PR #4 is conflict-free; local and remote feature heads match. Publishing this acceptance record before merge.
+**Last verified state:** 99 automated tests and native HTTP/HTTPS-proxy/wss browser flows passed earlier in this session; runtime source is unchanged. Current `/ready` reports ready/database up. GitHub reports no commit statuses or PR workflow runs; absence of CI is not reported as a CI pass.
 
 ## Completed work and evidence
 
@@ -108,7 +108,7 @@ Begin Phase 5: full security/accessibility review, reproducible query/performanc
 measurement and academic documentation/rubric evidence. Verify the new screens,
 secure cookies and two distinct users over actual forwarded Codespaces HTTPS/wss.
 PR #3 is already merged; its historical draft status is not a current blocker.
-Review Phase 4 in draft PR #4 and complete actual Codespaces acceptance; no release tag yet.
+Merge accepted Phase 4 PR #4, synchronize main and proceed to Phase 5; no release tag yet.
 
 ## Historical session change log — initial foundation
 
@@ -387,3 +387,11 @@ Chronological entries below include intermediate states; the current authoritati
 - `git push -u origin codex/phase-4-realtime` succeeded; `git ls-remote` returned the exact full implementation SHA. The local branch tracks origin/codex/phase-4-realtime.
 - Draft [PR #4](https://github.com/A-PerfectStranger/Food-Waste-Fighter-WebAvanzadas/pull/4) created against main, titled “Implementar fase 4: chat autenticado y avisos de inventario”. GitHub confirmed open/draft/unmerged with the expected head and base. The description records 99-test/native-browser evidence, actual local proxy/wss scope and the pending remote Codespaces acceptance.
 - This documentation-only follow-up records the successful publication; runtime/dependencies/tests remain unchanged after the verified implementation commit. No merge, deployment or release tag performed. Phase 5 remains next.
+
+
+## Phase 4 owner acceptance and merge authorization — 2026-11-07
+
+- The owner explicitly stated “doy por finalizada la fase 4” and requested immediate merge and an updated environment. This closes the Phase 4 acceptance gate; no further confirmation is required.
+- Before changes: clean local feature branch and remote PR head both `d6b9c07426fe69c39d43c005bd53fe08e4174095`; remote main `2d49858`. PR #4 open/draft and mergeable, no conflicts. No remote statuses or workflow runs were reported. The existing 99-test/browser result remains valid for unchanged runtime code.
+- The checkout's fetch configuration tracks main only; explicitly fetched the Phase 4 branch to verify its head. Application `/ready` returns ready/database up. Acceptance documentation is published before removing draft status and merging with an expected-head check.
+- Owner acceptance is recorded as acceptance, not an invented agent-run capture of remote Codespaces traffic. Detailed remote traces may still be collected for Phase 5 defense evidence; they no longer block Phase 4 or this authorized merge.
