@@ -77,3 +77,11 @@ sesión, versión y empresa por evento y antes de cada entrega. Un logout/reset
 revoca también los sockets, sin que puedan recrear sesiones antiguas mediante
 un guardado propio. La política de origen para polling/WebSocket y la
 reconciliación de presencia se detallan en [REALTIME.md](REALTIME.md).
+
+
+## Revisión de fase 5
+
+Los formularios de acceso ahora tienen región main y contraste de texto/acciones
+corregido con el verde700 existente; campos, rutas, tokens y políticas de sesión
+no cambian. La regresión, revisión de seguridad y límites de verificación están
+en QUALITY_REVIEW.md. La hoja de ruta de JWT no modifica la autenticación actual.

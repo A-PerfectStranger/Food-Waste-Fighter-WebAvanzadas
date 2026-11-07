@@ -133,3 +133,12 @@ El contrato y la verificación se describen en [REALTIME.md](REALTIME.md).
 Trabajo asistido por OpenAI Codex: adaptación de las plantillas del ZIP,
 implementación, revisión y verificación. Los resultados exactos y sus límites
 se registran en PROGRESS.md.
+
+
+## Revisión de fase 5
+
+El comportamiento de negocio se conserva. La revisión axe/teclado aplica el
+verde700 existente a acciones/texto normal para contraste, conserva verde600
+para marca grande y no modifica legacy.css. Los resultados de accesibilidad y
+medición del repositorio SQL están en QUALITY_REVIEW.md y PERFORMANCE.md;
+los índices existentes no implican aceleración de cualquier subcadena.

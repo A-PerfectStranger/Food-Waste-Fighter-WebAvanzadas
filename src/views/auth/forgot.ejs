@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es"><head><%- include('../partials/head', { title: 'Recuperar contraseña' }) %></head>
 <body class="bg-gray-50 text-gray-800 min-h-screen flex items-center justify-center">
- <div class="w-full max-w-md p-6"><div class="text-center mb-8"><%- include('../partials/logo') %></div>
+ <main class="w-full max-w-md p-6"><div class="text-center mb-8"><%- include('../partials/logo') %></div>
  <div class="bg-white p-8 rounded-xl shadow-lg"><h1 class="text-2xl font-bold text-center mb-6">Recuperar contraseña</h1>
  <% if (error) { %><div role="alert" class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded text-red-700"><%= error %></div><% } %>
  <% if (message) { %><p role="status" class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded text-green-700"><%= message %></p><% } %>
@@ -13,4 +13,4 @@
 
  <button class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors mt-6">Enviar enlace</button>
  </form><p class="text-center mt-6"><a href="/auth/login" class="text-green-600 hover:text-green-700 font-medium">Volver a iniciar sesión</a></p>
- </div></div></body></html>
+ </div></main></body></html>

@@ -2,7 +2,7 @@
 
 Aplicación académica para una cafetería o restaurante pequeño: control de alimentos, aprovechamiento de ingredientes y coordinación del personal. Se utiliza un monolito Node.js con vistas renderizadas en el servidor.
 
-**Estado:** fases 1–4 aceptadas y fusionadas en `main` (PR #1–#4). La fase 3 incorpora dashboard, inventario CRUD, búsqueda/paginación, categorías, caducidad y consulta de recetas, conservando las plantillas y estilos del proyecto original. La fase 4 añade chat Socket.IO autenticado, historial MySQL, presencia y avisos de inventario por empresa. El estado y las evidencias se conservan en [PROGRESS.md](PROGRESS.md).
+**Estado:** fases 1–4 aceptadas y fusionadas en `main` (PR #1–#4). La fase 3 incorpora dashboard, inventario CRUD, búsqueda/paginación, categorías, caducidad y consulta de recetas, conservando las plantillas y estilos del proyecto original. La fase 4 añade chat Socket.IO autenticado, historial MySQL, presencia y avisos de inventario por empresa. La fase 5 incorpora revisión de calidad, correcciones de accesibilidad, medición reproducible y documentación académica; el cotejo oficial y la entrega del equipo siguen explícitos. El estado y las evidencias se conservan en [PROGRESS.md](PROGRESS.md).
 
 ## Ejecución íntegra en GitHub Codespaces
 
@@ -97,6 +97,33 @@ Un arranque con MySQL inaccesible puede tardar unos diez segundos: el adaptador 
 
 Otros comandos: `npm start`, `npm run db:generate`, `npm run db:migrate` (migraciones revisadas), `npm run db:migrate:dev` (desarrollo de nuevas migraciones) y `npm run db:seed`.
 
+## Calidad, rendimiento y preparación académica
+
+Tras desplegar las migraciones de prueba con `npm run test:db`, se pueden ejecutar:
+
+```sh
+# Si no existe Chromium, instalarlo una vez dentro de Codespaces:
+npx playwright install --with-deps chromium
+npm run verify:browser
+# Medición independiente del navegador/otras cargas:
+npm run measure:queries
+```
+
+Ambos comandos exigen MySQL test independiente y guardan nuevos informes en
+`work/`; crean y limpian solo fixtures propios. El navegador usa Playwright y
+axe, prueba teclado/dos usuarios/avisos y revisa 20 rutas en escritorio/móvil.
+Se detecta `/usr/bin/chromium` si existe, o el navegador descargado por Playwright;
+`BROWSER_EXECUTABLE_PATH` permite seleccionar otro binario del propio entorno.
+
+La fase 5 registra **106 pruebas automatizadas**, 40 escaneos de página/tamaño
+sin infracciones detectadas y una medición del repositorio de inventario con
+1000 alimentos (p50/p95 y planes, no un SLA). Los límites de accesibilidad,
+rendimiento y evidencia remota están en los informes; no se afirma certificación.
+Los placeholders de equipo/fecha/entrega se mantienen por solicitud del dueño.
+La rúbrica histórica suma 20 puntos, pero sus pesos oficiales requieren cotejo
+con el DOCX no disponible en esta sesión. No se crea `v1.0-b1` ni se simula envío
+al curso; el procedimiento está en RELEASE_CHECKLIST.md.
+
 ## Arquitectura y documentación
 
 ```mermaid
@@ -122,6 +149,14 @@ flowchart LR
 - [Autenticación, seguridad y adaptación visual](docs/AUTHENTICATION.md).
 - [Funcionalidad empresarial y conservación de estilos](docs/BUSINESS_FUNCTIONALITY.md).
 - [Chat, handshake, eventos y transportes](docs/REALTIME.md).
+- [Arquitectura implementada y fronteras de confianza](docs/ARCHITECTURE.md).
+- [Problema, objetivos, historias, cronograma y equipo](docs/ACADEMIC_BRIEF.md).
+- [Matriz de requisitos y cotejo de rúbrica](docs/COMPLIANCE_MATRIX.md).
+- [Revisión de seguridad, accesibilidad y pruebas](docs/QUALITY_REVIEW.md).
+- [Rendimiento medido y planes de consulta](docs/PERFORMANCE.md).
+- [Guion de defensa y acta de Codespaces](docs/DEFENSE_DEMO.md).
+- [Preparación de entrega y versión](docs/RELEASE_CHECKLIST.md).
+- [Hoja de ruta del segundo bimestre (solo documentación)](docs/second-bimester-roadmap.md).
 - [Evidencias de fase1](docs/PHASE1_VERIFICATION.md).
 - [Progreso, resultados y siguientes tareas](PROGRESS.md).
 
@@ -131,7 +166,7 @@ Stack: Node.js24 LTS, Express5, EJS, Tailwind4, Inter, Prisma7.10.1, MySQL8.4, A
 
 Las referencias son `Food_Waste_Fighter-main.zip` y `Guía del Proyecto AppWebAv.docx`, aportadas al proyecto. Se reutiliza el HTML/JSP/CSS visual del ZIP por solicitud expresa; no se importa su manejo de contraseñas, sus cuentas ni su SQL destructivo. La autoría original no fue indicada en los adjuntos. Inter procede de `@fontsource/inter` y se distribuye bajo SIL Open Font License, incluida en el paquete.
 
-El equipo, sus integrantes y roles siguen pendientes de completar con información real. La fase 5 incluye evidencia detallada Codespaces wss para la defensa, revisión de calidad, rendimiento y documentación académica. No se ha creado `v1.0-b1` ni se presenta el estado actual como entrega final del bimestre.
+El equipo, sus integrantes y roles siguen pendientes de completar con información real. La fase 5 documenta calidad/rendimiento y prepara la defensa; el equipo debe completar los datos reales, cotejo oficial, evidencia detallada Codespaces y entrega. No se ha creado `v1.0-b1` ni se presenta el estado actual como entrega final del bimestre.
 
 ### Uso de IA
 

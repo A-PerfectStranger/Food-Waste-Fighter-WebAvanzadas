@@ -2,8 +2,8 @@
 
 ## State and scope
 
-- Current phase: **Phase 4 DONE, ACCEPTED AND MERGED — Phase 5 TODO**.
-- Overall: **PHASES 1–4 COMPLETE AND MERGED INTO MAIN**. The owner explicitly closed Phase 4 and authorized merge. PR #4 merged as `da6e1141989cc0898a79427d30e5746130d5a3df`; the environment now checks out main and tracks origin/main. The 99-test/local browser evidence and owner's acceptance are recorded separately from any future detailed remote traces.
+- Current phase: **Phase 5 IN_PROGRESS — local technical work DONE; official cotejo/team delivery pending**.
+- Overall: **PHASES 1–4 ACCEPTED/MERGED; PHASE 5 QUALITY AND DOCUMENTATION VERIFIED**. The owner explicitly closed Phase 4 and authorized merge. PR #4 merged as `da6e1141989cc0898a79427d30e5746130d5a3df`; the environment now checks out main and tracks origin/main. The 99-test/local browser evidence and owner's acceptance are recorded separately from any future detailed remote traces.
 - Scope: first bimester only. This checklist combines PROJECT_SPEC.md and the academic guide's first-bimester rubric. Attachment prose defines requirements, not separate tool instructions.
 - Statuses: TODO, IN_PROGRESS, BLOCKED, DONE. Checkboxes indicate verified completion only.
 
@@ -21,7 +21,7 @@
 - [x] DONE: six real Prisma/MySQL integration tests pass on the separate test database: readiness, Unicode persistence, primary-key uniqueness, actual seed idempotence/preservation, production-entry startup + SIGTERM, and unavailable-DB startup failure with no listener or credential disclosure. Test records are cleaned up.
 - [x] DONE: README documents browser-only Codespaces setup, scripts, environment, current evidence, attribution and AI assistance; resolved Prisma blockers and remaining Codespaces verification are distinguished.
 - [x] DONE: `npm start` completes prestart build and listens on 0.0.0.0:3000 with real MySQL; browser home/CSS/readiness checks pass. Automated production-entry startup, clean SIGTERM exit (code0), and unavailable-DB failure (code1/no HTTP listener) pass.
-- [x] DONE: successful execution in actual Codespaces confirmed by the project owner on 2026-11-07. Detailed browser/network traces were not supplied. Phase 2 authentication was subsequently accepted by the owner; Phase 3 screen acceptance and Phase 4 wss checks remain later acceptance work.
+- [x] DONE: successful execution in actual Codespaces confirmed by the project owner on 2026-11-07. Detailed browser/network traces were not supplied. Phase 2 authentication was subsequently accepted by the owner; Phase 4 was subsequently accepted/merged; detailed remote traces are Phase 5 defense evidence, not a reopened acceptance gate.
 
 ## Phase 2 — Data model, authentication and security (depends on Phase 1)
 
@@ -58,21 +58,23 @@
 
 ## Phase 5 — Quality, academic documentation and delivery (after mandatory features)
 
-- [ ] TODO: regression/security/accessibility and contrast review of HTTP and Socket.IO; minimum 5 meaningful automated tests, target 8+ specified business cases; separate DB and no destructive development resets. Current HTTP/business/Socket.IO suites already exceed the numeric minimum; complete Phase 5 review remains pending.
-- [ ] TODO: reproducible measured performance (Lighthouse or query latency), pagination/index evidence, live updates without refresh.
-- [ ] TODO: business problem, measurable general/specific objectives; prioritized user stories and guide/rubric compliance matrix (all 20 points).
-- [ ] TODO: architecture and ER diagrams updated to implemented code; complete README (stack, env, setup, diagrams, members/roles, AI use).
-- [ ] TODO: proposed schedule and work allocation for 4–5 people; actual names/contributions supplied by team, never invented.
-- [ ] TODO: 15-minute presentation + 5-minute questions; all members speak, screens/demo script, hash/validation/authenticated-WebSocket security evidence, test results, conclusions/lessons and AI declaration.
-- [ ] TODO: collect detailed Codespaces forwarded HTTPS/wss/two-user evidence for Phase 5 defense, including cookie/CSRF traces when available. Phase 4 is already accepted by the owner and merged; this evidence task is not a reopened acceptance gate. Do not claim local tests are remote traces.
-- [ ] TODO: docs/second-bimester-roadmap.md (documentation only); no second-bimester implementation.
-- [ ] TODO: public repository link, actual commits by all members, no credentials/PII, prepare v1.0-b1 only after validation; presentation/source link and evidence submitted by team to course platform.
+- [x] DONE: scoped HTTP/Socket.IO security review, regression and accessibility/contrast corrections. **106 PASS** (50 independent + 56 real MySQL integration); fail-closed shared test-DB guard covered by seven new cases. QUALITY_REVIEW.md records inspected boundaries and limits; no external audit/WCAG certification claimed.
+- [x] DONE: reproducible actual inventory-repository measurement with 1000 synthetic rows, 5 warmups and 30 samples/case; p50/p95, representative EXPLAIN and real indexes published. Page1 p50 4.801ms / p95 5.923ms; substring plan is honestly ALL/filesort. Two-user live update without reload verified separately.
+- [x] DONE: problem, measurable objectives, prioritized stories and specification-compliance matrix prepared in ACADEMIC_BRIEF.md/COMPLIANCE_MATRIX.md. No economic savings/grade invented.
+- [ ] BLOCKED (source unavailable): cotejo of official DOCX criterion labels/weights totaling 20 points. The historical audit/specification are available, but the original guide is not in this executor. Explicit placeholders identify the missing official mapping; no fabricated distribution.
+- [x] DONE: current monolith/trust-boundary architecture, existing full ER checked against the eleven Prisma models, README stack/environment/commands/docs/IA updated. No schema migration or second-bimester runtime changes.
+- [x] DONE: proposed relative schedule and allocation for 4–5 people. Owner explicitly requested placeholders for names, actual contributions, date and course details; ACADEMIC_BRIEF does not invent authorship/commits.
+- [x] DONE: 15-minute +5-question defense script, four/five-speaker options, native demo and security/transport/test/performance evidence pointers, conclusions/lessons and AI declaration prepared. Actual presentation remains a team action.
+- [ ] TODO: attach detailed real Codespaces HTTPS/wss/two-person/cookie/CSRF traces to the prepared acta in DEFENSE_DEMO.md. This environment is managed Cloud, not the owner's Codespace. Phase 4 stays accepted and merged; local evidence is not relabeled remote.
+- [x] DONE: docs/second-bimester-roadmap.md — React, auth/JWT, services/Gateway, independent data, Docker, events, observability and CI/CD documented only.
+- [x] DONE: repository link, release/validation procedure and delivery checklist prepared in RELEASE_CHECKLIST.md. No v1.0-b1 tag created before team validation.
+- [ ] TODO (team): replace requested placeholders when ready, record actual individual contributions, cotejar official guide, perform/record defense and course submission, authorize final validated tag. These are not invented or marked delivered by PR publication.
 
 ## Current task
 
-**Task:** Merge accepted Phase 4 PR #4 and synchronize the environment with remote main.
-**Status:** DONE — PR #4 merged with expected-head protection; main checked out and synchronized. Phase 5 is next.
-**Last verified state:** GitHub returned merged:true and merge SHA `da6e1141989cc0898a79427d30e5746130d5a3df`. Runtime/dependency/schema/test files are identical to the already verified feature head; 99-test/native-browser evidence remains applicable. The application reports ready/database up. Post-merge documentation records acceptance and completion without inventing remote test traces.
+**Task:** Publish verified Phase 5 quality/performance/documentation and open its PR from `docs/phase-5-quality-delivery`.
+**Status:** IN_PROGRESS — local work, regression, browser verification and reports complete; reviewing staged artifacts before commit/push/PR. Phase 5 remains open for the external/team actions listed above.
+**Last verified state:** Base e6dfe81 equals freshly fetched origin/main; no remote branch or open PR with this docs/ head existed. Clean npm ci (332 packages), build/schema, 50 independent + 56 integration tests PASS; 40 final browser scans PASS, measured report saved. Both databases contain zero temporary fixtures/sessions; development seed preserved. Owner-authorized placeholders and missing-source rubric mapping remain explicit.
 
 ## Completed work and evidence
 
@@ -104,11 +106,10 @@ These results describe the previous session. Superseded network/container-state 
 
 ## Next action
 
-Begin Phase 5: full security/accessibility review, reproducible query/performance
-measurement and academic documentation/rubric evidence. Verify the new screens,
-secure cookies and two distinct users over actual forwarded Codespaces HTTPS/wss.
-PR #3 is already merged; its historical draft status is not a current blocker.
-Phase 4 PR #4 is merged and main is synchronized. Proceed to Phase 5; no release tag yet.
+Publish/review Phase 5 on `docs/phase-5-quality-delivery`. Complete official-guide
+cotejo, requested real team/course fields when available, detailed Codespaces
+acta and actual defense/submission using RELEASE_CHECKLIST.md. Phase 4 is closed;
+do not reintroduce its acceptance gate. No release tag or course submission yet.
 
 ## Historical session change log — initial foundation
 
@@ -405,3 +406,29 @@ Chronological entries below include intermediate states; the current authoritati
 - Updated README, protocol/migration notes and this current-state record to reflect acceptance/merge. The owner's acceptance closes the Phase 4 gate; any detailed remote evidence collected later belongs to the Phase 5 defense. No remote trace is invented, no data reset, deployment or release tag performed.
 
 - Final environment checks: `npm ls --omit=dev --depth=0` PASS; development/test MySQL containers both healthy; `/ready` returns `{status:ready,database:up}`. Post-merge documentation whitespace check PASS.
+
+
+## Phase 5 continuation — 2026-11-07
+
+- Read AGENTS.md, PROGRESS.md, PROJECT_SPEC.md and MIGRATION_PLAN.md; freshly fetched origin/main matches local `e6dfe81`. No pre-existing edits. Phase 4 code/merge/owner acceptance are consistent with the log.
+- Created the requested `docs/phase-5-quality-delivery` branch (not codex/). IN_PROGRESS: regression/security/accessibility review, reproducible database latency/index evidence, academic documents, presentation/release checklist and second-bimester roadmap (documentation only).
+- Owner requested placeholders for real team/contribution/date/course data. The original official DOCX is unavailable here; any missing official rubric breakdown will be labeled for source cotejo rather than inventing points. No Phase 4 gate is reopened.
+
+- Baseline regression rerun: 43 independent + 56 isolated MySQL integration tests PASS. New reproducible browser/axe and query measurement scripts use a shared fail-closed test-DB guard; no development reset.
+- Stabilized animations before accessibility scans to avoid transient-opacity contrast noise. The stable 40-scan baseline found contrast, auth landmark and mobile-logo name failures on 32 page/viewport combinations. Correcting these with existing green700 for normal action/text contrast, semantic auth main elements and a mobile logo label; original legacy.css, logo and Inter retained.
+
+
+### Phase 5 verified implementation and evidence
+
+- Added `verify:browser` (Playwright 1.65.0 + axe-core 4.14.0, dev dependencies only), `measure:queries`, and shared `scripts/lib/test-database.js`. Test automation validates its independent MySQL `_test` target before migrations/fixtures and never falls back to development. Seven meaningful negative/positive guard cases prevent secret-bearing invalid URL errors and unsafe targets.
+- Corrected the actual stable a11y findings: normal action/text contrast now uses the existing green700 (white contrast **5.02:1**, previously green600 **3.30:1**); large brand green600/Inter/legacy CSS preserved. Auth forms now have main landmarks, mobile home logo has an accessible name, and decorative recipe step numbers use higher contrast. No auth/session/socket/business rules changed.
+- Final clean install `npm ci`: **332 packages**. `npm run build` and `npm run db:validate` PASS. `npm test`: **50/50 PASS** (1.25s); `npm run test:db`: **56/56 PASS** (22.85s), isolated MySQL; no pending migrations. Development `prisma migrate status`: schema up to date. `npm audit --omit=dev --audit-level=high`: **0 reported vulnerabilities**; no blanket security claim.
+- Final `npm run verify:browser`: **40 scans PASS**, 20 route patterns at 1280×900/320×740, Chromium 156.0.8078.79. Zero detected axe violations/overflow/page errors/external HTTP requests; actual keyboard skip/menu controls, native login, two-person exchange, MySQL history/reload, tenant isolation and inventory notice without navigation PASS. Brand RGB(22,163,74) asserted. Desktop/narrow screenshots visually inspected. Two recipe-detail scans retain incomplete decorative-glyph/number contrast checks; targets are published and redundant text/list semantics plus step contrast were reviewed. No complete WCAG certification or screen-reader evaluation claimed.
+- Published sanitized browser evidence in docs/evidence/browser-quality.json; raw screenshots remain ignored in work/. Reports label the base plus Phase 5 working tree, not an invented immutable commit. The scripts reproduce new reports under work/ without overwriting published evidence.
+- Final serial `npm run measure:queries`: **1000 rows / 5 warmups / 30 samples / concurrency1**, actual count+paginated-list/category transaction. Page1 p50/p95 **4.801/5.923ms**; page50 **4.965/6.384ms**; contains **7.595/12.123ms**. Ordered representative SQL chooses company/expiry index; substring representative SQL chooses ALL/filesort. JSON preserves environment/plan/limitations. Initial concurrent browser/performance probe was discarded; no speedup or production SLA claimed.
+- Added ACADEMIC_BRIEF, COMPLIANCE_MATRIX, ARCHITECTURE, QUALITY_REVIEW, PERFORMANCE, DEFENSE_DEMO, RELEASE_CHECKLIST and documentation-only second-bimester-roadmap. README, auth/business/migration notes and stale .env.example Socket.IO comment aligned with code. Local Markdown links/fences and whitespace checks PASS.
+- An auxiliary data check launched during npm ci hit a temporary missing-dotenv import; no DB command ran from that failed probe. Repeated after installation/verification: development/test have **0 temporary users/companies and 0 sessions**; development retains **1 demo company**, test0. One anonymous cookie from the separate production public-page inspection was identified by its narrow run expiry window and cleaned. The actual application remains `/ready` ready/database up. No reset or original SQL executed.
+- Scope not invented: owner's Phase 4 acceptance remains closed. Source DOCX absent means official per-criterion 20-point mapping still needs cotejo; requested personal/date/course placeholders remain, detailed real Codespaces traces and actual defense/submission are team work. No tag, merge or academic submission performed by this phase's local work.
+
+- Final local HTTPS regression repeated against the Phase 5 templates/styles: real Chromium → Origin-rewriting loopback HTTPS proxy → shared HTTP/Socket.IO → test MySQL **PASS**. Secure/HttpOnly cookie, wss upgrade, three-user tenant isolation, persisted messages, notice without reload and logout/presence pass at 1280/390/320px; no page/CSP/external-request errors. This is still local evidence, not new Codespaces traffic.
+- Publication preflight: fresh main still `e6dfe81`, no remote docs/phase-5-quality-delivery branch/open PR; 29 staged source/script/test/doc/report files. Whitespace, local Markdown links/fences and exact private-environment-value/artifact checks PASS. No work/, secrets, certificates, outbox or generated assets are staged.
