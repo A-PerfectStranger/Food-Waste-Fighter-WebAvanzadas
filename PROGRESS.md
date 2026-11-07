@@ -70,7 +70,7 @@
 ## Current task
 
 **Task:** Publish Phase 2 authentication/security and preserved original appearance for review.
-**Status:** Implementation and verification DONE on `codex/phase-2-authentication`; separate PR publication IN_PROGRESS. No Phase 2 merge is being performed.
+**Status:** DONE. Phase 2 implementation, verification and publication completed on `codex/phase-2-authentication`; [PR #2](https://github.com/A-PerfectStranger/Food-Waste-Fighter-WebAvanzadas/pull/2) is open as a draft for review, not merged.
 **Files:** Prisma schema/migration/seed; auth/users/session/security modules; EJS/public assets; tests; README, DATA_MODEL.md, AUTHENTICATION.md, MIGRATION_PLAN.md and this progress log.
 **Last verified state:** Clean `npm ci` (307 packages), full build/schema validation, 18 independent + 24 real-MySQL tests PASS. Native desktop/mobile register/logout/recovery/reset/login flow PASS, original Inter/palette/layout retained. Test/browser synthetic users cleaned; development demo users remain exactly two.
 
@@ -103,7 +103,7 @@ These results describe the previous session. Superseded network/container-state 
 
 ## Next action
 
-Publish Phase 2 for review on its own branch without merging it into main; clean-install regression has passed. The next implementation phase is tenant-scoped inventory CRUD/dashboard/recipes, reusing the original JSP/HTML/CSS identity. Actual Codespaces authentication/cookie/form testing is required before final bimester delivery.
+Review PR #2 and verify the new authentication/forms in actual Codespaces. No Phase 2 merge has been performed; clean-install regression has passed. The next implementation phase is tenant-scoped inventory CRUD/dashboard/recipes, reusing the original JSP/HTML/CSS identity. Actual Codespaces authentication/cookie/form testing is required before final bimester delivery.
 
 ## Historical session change log — initial foundation
 
@@ -172,6 +172,12 @@ Chronological entries below include intermediate states; the current authoritati
 - `node work/phase2-browser.mjs` against actual `npm start` → PASS at1280x900 and390x844: original landing/forms, mobile menu, Inter loaded locally, exact original green600 RGB(22,163,74), no horizontal overflow/external network/page errors/CSP violations. Native HTML5 mismatch/match confirmation, registration, protected account/team, POST logout, private mode0600 outbox, token reset and new-password login all pass. Synthetic browser account/session/outbox records are removed after the run; screenshots remain in ignored work/.
 - `npm audit --omit=dev --audit-level=high` → 0 vulnerabilities reported. Final clean-install regression passed: `npm ci` (307 packages) → build → schema validation → 18 independent and 24 integration tests, all PASS (integration duration15.38s). `git diff --check` passes. Actual authentication over forwarded Codespaces HTTPS has not been tested in this managed workspace; no such result is claimed.
 
-- Final data check: development/test both contain zero `auth-*` and `browser-*` users. Development retains exactly two demo users; test retains zero. Session IDs created by integration agents are captured for targeted cleanup. All Phase 2 checkboxes are marked DONE based on executed verification. Separate PR publication is the remaining administrative action.
+- Final data check: development/test both contain zero `auth-*` and `browser-*` users. Development retains exactly two demo users; test retains zero. Session IDs created by integration agents are captured for targeted cleanup. All Phase 2 checkboxes are marked DONE based on executed verification. Separate PR publication was subsequently completed as recorded below.
 
 - Publication check: the initial staged whitespace check detected trailing spaces retained from the source JSP markup in new EJS files. Those spaces were removed without changing markup/classes; the staged check was repeated before commit. Private .env secret values were absent from all publishable files.
+
+### Phase 2 publication — DONE
+
+- Commit `b669e48a18249559ea5f3195986149a1879abe14` contains the verified Phase 2 implementation, tests, template reuse and documentation. Push to `origin/codex/phase-2-authentication` succeeded.
+- Draft [PR #2](https://github.com/A-PerfectStranger/Food-Waste-Fighter-WebAvanzadas/pull/2) created against `main` with an impersonal Spanish description, 42-test/browser evidence and the explicit pending Codespaces authentication check. GitHub confirmed open/draft/unmerged.
+- This documentation follow-up records completed publication. No further code changes or Phase 3 implementation were made; the next action is review/Codespaces verification, then tenant-safe business functionality.

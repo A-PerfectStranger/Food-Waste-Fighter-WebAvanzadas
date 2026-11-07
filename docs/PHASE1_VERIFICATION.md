@@ -1,6 +1,6 @@
 # Phase 1 verification — 2026-11-07
 
-Current evidence for `codex/phase-1-foundation`, resumed from `8cd7150`. The detailed history, errors and remaining work are in [PROGRESS.md](../PROGRESS.md). This is an evidence index, not a release acceptance statement.
+Historical Phase 1 evidence for `codex/phase-1-foundation`, verified through `2726c43` and merged in `aa6d158`. It describes the Phase 1 snapshot, not the later Phase 2 implementation. The detailed history, errors and remaining work are in [PROGRESS.md](../PROGRESS.md). This is an evidence index, not a release acceptance statement.
 
 **Phase 1: DONE.** Persistence/startup passed automated checks. Successful Codespaces operation was confirmed by the project owner on 2026-11-07 (externally reported evidence). The old Prisma/Microsoft download restrictions no longer reproduce. No TLS/checksum verification was disabled.
 
@@ -35,4 +35,4 @@ These 20 checks verify the foundation. They do not replace the later mandatory a
 
 The project owner confirmed successful operation in Codespaces on 2026-11-07 and requested PR update/merge. This closes Phase 1. The managed executor disk-limit result is retained as historical evidence and is distinct from the external Codespaces validation. Authentication/cookie/CSRF and two-user wss acceptance remain later-phase work because those features do not exist yet.
 
-PR #1 is being updated to include the completed persistence/startup verification and externally confirmed Codespaces result. No bimester release tag or deployment is included.
+PR #1 was updated in impersonal Spanish and merged into main as `aa6d158951571a82810c090a23c6b15550b0487c`. Subsequent authentication/schema/template work belongs to PR #2; its current status is recorded in PROGRESS.md and AUTHENTICATION.md. No bimester release tag or deployment is included.
