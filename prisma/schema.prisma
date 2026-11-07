@@ -1,0 +1,17 @@
+generator client {
+  provider   = "prisma-client-js"
+  output     = "../src/generated/prisma"
+  engineType = "client"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// Phase 1 persistence bootstrap. Full business model is the next dependency.
+model Company {
+  id          String   @id @default(cuid()) @db.VarChar(30)
+  name        String   @db.VarChar(120)
+  description String?  @db.VarChar(500)
+  createdAt   DateTime @default(now()) @db.DateTime(3)
+}
