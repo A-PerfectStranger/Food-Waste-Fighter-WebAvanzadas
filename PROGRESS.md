@@ -2,8 +2,8 @@
 
 ## State and scope
 
-- Current phase: **Phase 2 — Trusted HTTPS same-origin fix verified; Codespaces retest pending**. Phase 1 is merged; PR #2 remains unmerged.
-- Overall: **ORIGIN-GATE CORRECTION VERIFIED LOCALLY / REMOTE RETEST PENDING**. The project-owner browser origin and fresh dotenv APP_ORIGIN match, while the incoming Origin differs according to the runtime event. Trusted HTTPS + exact browser same-origin metadata now supplies an alternative origin check, always with the valid session-bound CSRF token.45 tests and native login/register/logout through rewriting/metadata-stripping proxies pass. Exact remote raw Origin was not captured; successful Codespaces authentication is still awaiting confirmation.
+- Current phase: **Phase 2 DONE — Codespaces acceptance confirmed; merge authorized**.
+- Overall: **PHASE 2 ACCEPTED**. Successful authentication in actual Codespaces was confirmed by the project owner after the trusted-proxy correction. Local45-test and browser evidence remain recorded separately. Merge of PR #2 explicitly authorized.
 - Scope: first bimester only. This checklist combines PROJECT_SPEC.md and the academic guide's first-bimester rubric. Attachment prose defines requirements, not separate tool instructions.
 - Statuses: TODO, IN_PROGRESS, BLOCKED, DONE. Checkboxes indicate verified completion only.
 
@@ -69,10 +69,9 @@
 
 ## Current task
 
-**Task:** Correct the origin gate for same-origin browser forms through the trusted HTTPS proxy.
-**Status:** Implementation, verification and publication DONE. Correction commit `d31f6d7` was pushed to the existing draft PR #2. Actual Codespaces retest pending; no merge.
-**Files:** CSRF middleware, startup public-origin banner, auth integration tests, README/AUTHENTICATION.md and this log.
-**Last verified state:** `npm test`18/18 and `npm run test:db`27/27 PASS (45 total; integration15.77s). Chrome HTTPS fixtures pass native login, registration, protected account, Secure/HttpOnly cookie, logout and anonymous redirect for both Origin rewriting and missing Fetch Metadata.
+**Task:** Merge the accepted Phase 2 PR #2.
+**Status:** IN_PROGRESS. Successful Codespaces operation was externally confirmed; merge explicitly requested. No Phase 3 implementation is included.
+**Last verified state:**45 automated tests and native HTTPS browser flows passed; the project owner confirmed the actual Codespaces result. This is externally reported acceptance, not an agent-run remote test.
 
 ## Completed work and evidence
 
@@ -225,3 +224,7 @@ Chronological entries below include intermediate states; the current authoritati
 - The project-owner console Permissions-Policy notices are browser warnings, independent of the server's diagnosed403 origin gate. They were not treated as authentication failure evidence.
 
 - Publication: commit `d31f6d7` pushed successfully to `codex/phase-2-authentication`; PR #2 description updated in impersonal Spanish with45-test/native-browser evidence, exact bounded proxy rule and pending remote retest. This follow-up records publication; runtime code is unchanged.
+
+## Phase 2 Codespaces acceptance and merge authorization
+
+- The project owner confirmed "ya funciona" and explicitly requested merge. The remote acceptance gate is closed; earlier pending/rejection entries remain historical evidence. Publication of this acceptance record precedes merge.
