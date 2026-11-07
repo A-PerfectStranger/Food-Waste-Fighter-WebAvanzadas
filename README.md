@@ -1,16 +1,16 @@
 # Food Waste Fighter — Business Edition
 
-Academic application for a fictional small cafeteria/restaurant that needs to reduce expired food, understand stock and coordinate employees. First-bimester target: one Node.js monolith with server-rendered views and its own WebSocket server.
+Aplicación académica para una cafetería o restaurante pequeño: control de alimentos, aprovechamiento de ingredientes y coordinación del personal. Se utiliza un monolito Node.js con vistas renderizadas en el servidor.
 
-**Current state:** Phase 1 complete. Full locked install/build, Prisma schema/migration, idempotent seed, 14 HTTP/configuration + 6 real MySQL integration tests, production startup/shutdown and desktop/mobile browser checks passed. Successful operation in GitHub Codespaces was confirmed by the project owner on 2026-11-07. Authentication, inventory, dashboard and chat remain pending. See [PROGRESS.md](PROGRESS.md) and [verification evidence](docs/PHASE1_VERIFICATION.md). This is not a completed bimester delivery.
+**Estado:** fase 1 completada y fusionada mediante [PR #1](https://github.com/A-PerfectStranger/Food-Waste-Fighter-WebAvanzadas/pull/1). Se implementa la fase 2 de modelo de datos, autenticación y seguridad. El inventario, las métricas del dashboard, las recetas y el chat funcional corresponden a las fases siguientes. El esquema y el seed de esas entidades no representan funcionalidades terminadas. El estado y las evidencias se conservan en [PROGRESS.md](PROGRESS.md).
 
-## Run entirely in GitHub Codespaces
+## Ejecución íntegra en GitHub Codespaces
 
-No Node, MySQL, Docker or editor installation is required on your computer. Use GitHub in your browser:
+No se requieren instalaciones en el equipo del estudiante.
 
-1. Open this repository on GitHub → **Code → Codespaces → Create codespace** (or rebuild the container after these configuration changes).
-2. The devcontainer uses the official `mcr.microsoft.com/devcontainers/javascript-node:5.2.5-24-bookworm` image, Docker-in-Docker and port3000. Its post-create hook creates a private `.env`, runs `npm ci`, generates Prisma and compiles CSS. If setup fails, read the command error and resolve it before continuing.
-3. In the Codespaces terminal, use the commands below. They also allow retrying a failed post-create setup:
+1. En GitHub se abre **Code → Codespaces → Create codespace**, o se reconstruye el contenedor existente.
+2. El devcontainer utiliza Node.js 24, Docker-in-Docker y el puerto3000. El comando post-create genera una `.env` privada sin sobrescritura, instala el lockfile, genera Prisma y compila CSS.
+3. En la terminal de Codespaces se ejecuta:
 
 ```sh
 npm run setup:env
@@ -22,67 +22,93 @@ npm run db:seed
 npm run dev
 ```
 
-4. In the **Ports** panel, open port3000 in your browser. The server binds to `0.0.0.0`. `/health` checks HTTP liveness; `/ready` queries MySQL and returns 503 if it cannot connect. Startup requires a successful database query before listening. A green liveness endpoint alone is not proof that persistence works.
+4. El puerto3000 se abre desde el panel **Ports**, con visibilidad privada. El servidor escucha en `0.0.0.0`. `/health` comprueba HTTP y `/ready` consulta MySQL; el arranque exige disponibilidad de la base de datos.
 
-These startup commands passed in the managed Cloud workspace. Successful operation in actual Codespaces was subsequently confirmed by the project owner; detailed Codespaces traces were not supplied.
+La ejecución de la fase 1 en Codespaces fue confirmada por la persona responsable del proyecto. Las comprobaciones de fase2 se ejecutan en MySQL real y navegador local, incluyendo simulación del proxy HTTPS en pruebas HTTP; todavía no se dispone de una confirmación externa de los nuevos formularios en Codespaces.
 
-`npm run setup:env` generates independent random database passwords, root passwords and a session secret into ignored `.env` with mode0600. It never overwrites an existing file. `.env.example` documents configuration without real credentials. Database URLs target containers published on the **Codespaces machine**, never a database on the student's computer.
+### Configuración
 
-The script derives APP_ORIGIN and TRUST_PROXY from Codespaces on first creation. If you move an existing `.env` into another Codespace, set APP_ORIGIN to the port3000 forwarded HTTPS URL and TRUST_PROXY=1; direct local HTTP uses TRUST_PROXY=0. No login/session or Socket.IO behavior exists yet, so forwarded HTTPS cookies, CSRF and two-tab wss remain future acceptance checks. Keep the forwarded port private while developing.
+[.env.example](.env.example) documenta las variables. `npm run setup:env` genera cinco secretos aleatorios independientes y guarda `.env` con permisos0600. El archivo existente se conserva. Los secretos y la bandeja privada no se incluyen en Git.
 
-MySQL8.4 (the MySQL8 LTS line) stores development data in the `mysql_data` volume. `docker compose stop` preserves data. Do not remove volumes or run the original Java setup SQL. Changing passwords in `.env` does not change credentials already stored in an initialized volume; preserve the original values or perform an intentional database credential rotation.
+| Variables | Uso |
+| --- | --- |
+| NODE_ENV, HOST, PORT | Modo y escucha HTTP; Node24 es obligatorio. |
+| APP_ORIGIN | Origen exacto del navegador: por ejemplo `http://localhost:3000`, o la URL HTTPS reenviada del Codespace. Se utiliza en CSRF y en los enlaces de recuperación. No admite rutas, credenciales ni parámetros. |
+| TRUST_PROXY | `1` para el proxy de Codespaces; `0` para HTTP directo. |
+| DATABASE_URL | Conexión MySQL de la aplicación, en el propio entorno de Codespaces. |
+| SESSION_SECRET | Secreto de firma de sesiones, mínimo32 caracteres; se genera automáticamente. |
+| MYSQL_* | Credenciales, base y puerto del contenedor de desarrollo. |
+| TEST_DATABASE_URL, TEST_MYSQL_* | Base y contenedor de pruebas independientes, puerto3307. |
+| BUSINESS_TIMEZONE | Zona de negocio prevista para la clasificación de caducidad de fase3. |
 
-### Verification provenance
+El origen se deriva del Codespace al crear `.env`. Si se reutiliza un archivo de otro entorno, se actualizan APP_ORIGIN y TRUST_PROXY. En producción se exige APP_ORIGIN con HTTPS; la cookie utiliza Secure en HTTPS, HttpOnly y SameSite=Lax. El arranque imprime el origen canónico que cargó el proceso. Tras editar .env se reinicia el servidor. La protección exige siempre el token de sesión; bajo HTTPS y el proxy configurado admite la señal de navegador `Sec-Fetch-Site: same-origin` si el proxy cambia Origin. Fuera de ese caso se comprueba el origen configurado.
 
-Prisma generation, migrations, seed and startup passed with normal TLS/checksum verification. The official devcontainer CLI parsed the configuration. Image extraction in the managed executor encountered a disk-capacity limit; successful operation was subsequently confirmed separately in GitHub Codespaces by the project owner on 2026-11-07. No agent-run Codespaces rebuild is claimed. Session/CSRF/Socket.IO acceptance will follow implementation of those features.
+El volumen `mysql_data` conserva desarrollo; `docker compose stop` mantiene los datos. Las contraseñas de un volumen inicializado no cambian al editar `.env`. No se requieren reinicios destructivos ni la ejecución del SQL original.
 
-## Stack and layout
+## Autenticación y apariencia
 
-- Node.js24 LTS / JavaScript, Express5, EJS, HTML5 and locally compiled Tailwind.
-- MySQL8.4 in Docker Compose, Prisma7.10.1 and matching MySQL-compatible driver adapter. Stable Prisma7 is pinned because the unqualified latest release currently resolves to an 8 release candidate.
-- Zod environment validation, Helmet/CSP; Vitest and Supertest.
-- Argon2id, persistent express-session, business validation/CSRF and Socket.IO are planned mandatory dependencies in their implementation phases.
+- `/` reutiliza la portada HTML original con sus clases y estilos.
+- `/auth/register` crea empresa, ADMIN, inventario y sala General en una transacción. No se aceptan roles ni empresas ajenas desde el formulario.
+- `/auth/login` verifica Argon2id y regenera la sesión; `/auth/logout` solo admite POST protegido.
+- `/dashboard` muestra la cuenta protegida. Las métricas y el CRUD se incorporarán en fase3.
+- `/team` permite a ADMIN consultar su equipo y crear EMPLOYEE dentro de su propia empresa.
+- `/auth/forgot` y `/auth/reset` completan la recuperación con token de treinta minutos y un solo uso. Solo se almacena su hash en MySQL. El cambio revoca las sesiones anteriores.
 
-```text
-src/app.js              Express composition without opening a listener
-src/server.js           Single HTTP listener, DB startup check and shutdown
-src/config/             Environment validation and Prisma construction
-src/modules/system/     Initial home, liveness and readiness routes
-src/middleware/         Safe errors and 404 responses
-src/views/              Server-rendered EJS views (escaped values)
-src/styles/             Tailwind source; generated CSS is ignored
-prisma/                 Company bootstrap schema, migration and fictional seed
-scripts/                Non-overwriting env setup and isolated DB test runner
-tests/                  HTTP/configuration + real DB/seed/startup integration checks
-```
+Los formularios de `login.jsp`/`registro.jsp`, la portada `landing.html` y el CSS suministrados se adaptan a EJS. Se conservan Inter, el logo, la distribución y los valores originales de verde/gris. CSS, fuente y JavaScript se sirven localmente, con CSP y sin scripts inline/CDN. Se eliminan el documento duplicado y las estadísticas sin evidencia de la portada original.
 
-Business modules will follow router → controller → service → repository boundaries within this same process. Socket.IO will attach to the HTTP server in Phase 4. The planned architecture is documented in [MIGRATION_PLAN.md](docs/MIGRATION_PLAN.md), alongside the original architecture and feature mapping. Only Company exists in the current schema; the full tenant-safe relational model/ER diagram must precede authentication.
+### Bandeja de correo simulada
 
-## Verification
+El seed crea los usuarios ficticios `admin@semilla.example` y `equipo@semilla.example` con contraseñas iniciales aleatorias que se descartan. El acceso se establece solicitando recuperación en `/auth/forgot`, consultando el JSON generado en **`work/outbox/` desde el editor privado**, y abriendo su enlace para definir una contraseña propia.
+
+La bandeja está ignorada por Git, sus archivos tienen permisos0600 y no se sirven por HTTP. Los enlaces no se muestran en respuestas públicas ni en logs. Se trata de una simulación académica de correo, sin servicio SMTP. El seed es idempotente y no cambia las contraseñas ya establecidas.
+
+## Pruebas
 
 ```sh
-npm run build:css         # independent of Prisma's engine download
-npm test                 # foundation HTTP/configuration tests; no DB
-npm run db:validate      # validates the Prisma schema
-# Independent ephemeral test database, separate credentials and port3307:
+npm run build
+npm run db:validate
+npm test
+# Base temporal separada; nunca se utiliza la de desarrollo:
 docker compose --profile test up -d --wait mysql-test
-npm run test:db           # migrate test DB; persistence, seed, startup/shutdown checks
+npm run test:db
 ```
 
-The test runner refuses a non-MySQL URL, a database without `_test` suffix, or a database name shared with development. It never resets/deletes development tables. Test records have unique IDs and only those IDs are removed. The test container uses tmpfs, so its contents are disposable on container recreation; the development volume is separate. Do not expose port3306 or3307 through Codespaces.
+Las pruebas independientes cubren HTTP, encabezados, errores y configuración. Las de integración ejercitan MySQL, seed idempotente, arranque/apagado, registro/duplicados, contraseñas, sesión persistente y caducidad, permisos, aislamiento, CSRF, límites de intentos, recuperación/caducidad/reutilización/concurrencia y restricciones de datos. Las pruebas de inventario y de WebSockets se incorporarán con sus módulos.
 
-Verified: 14 HTTP/configuration tests and 6 isolated real-MySQL tests, schema/migration/seed (twice with exactly one development demo company), clean test-data removal, full `npm start`, desktop/mobile rendering with real database readiness, clean SIGTERM exit and safe unavailable-DB startup failure without a listener. Run `npm run build` before integration checks so generated Prisma and CSS exist. An unavailable-DB startup can take about 10 seconds because adapter discovery and the readiness query each have a 5-second acquisition timeout. These foundation checks **do not** satisfy the guide's later auth/CRUD/chat testing requirements or establish actual Codespaces HTTPS behavior.
+El ejecutor rechaza bases sin sufijo `_test`, protocolos distintos de MySQL y el nombre de desarrollo antes de migrar. Solo se eliminan registros creados por las pruebas; el servicio mysql-test usa tmpfs y credenciales independientes. Los puertos3306/3307 no requieren reenvío público.
 
-Scripts also include `npm run db:generate`, `npm run db:migrate:dev` (developer-generated future migrations), `npm run db:migrate` (apply reviewed migrations), `npm run db:seed`, `npm start`, and `npm run build`. Future migrations must not use destructive reset commands on development data.
+Un arranque con MySQL inaccesible puede tardar unos diez segundos: el adaptador consulta capacidades y luego disponibilidad, cada una con timeout de adquisición de cinco segundos. Se comprueba la salida segura sin listener HTTP.
 
-## Academic context and attribution
+Otros comandos: `npm start`, `npm run db:generate`, `npm run db:migrate` (migraciones revisadas), `npm run db:migrate:dev` (desarrollo de nuevas migraciones) y `npm run db:seed`.
 
-Inputs: the user-supplied `Food_Waste_Fighter-main.zip` (Java17 Servlets/JSP/JPA/MySQL reference application) and `Guía del Proyecto AppWebAv.docx` (EPN Aplicaciones Web Avanzadas project guide). The original project's author, repository URL and reuse license were not supplied; the team must confirm attribution/permissions before redistributing original assets or recipe content. No original code/assets, plaintext accounts or SQL dump were copied into the new runtime. Only a synthetic Company bootstrap is seeded.
+## Arquitectura y documentación
 
-The first-bimester guide requires authentication/reset, protected principal screen, paginated CRUD, authenticated WebSockets/persistent history/presence/additional event, documented schema, security, at least five meaningful tests, performance evidence and a team defense. PROJECT_SPEC.md adds the restaurant-specific model, recipes, company isolation, Codespaces constraints and expanded documentation. All mandatory items are tracked in PROGRESS.md; none of the second-bimester architecture is being implemented now.
+```mermaid
+flowchart LR
+  Browser[Navegador] --> HTTP[Node24 / Express / EJS]
+  HTTP --> Security[CSRF / sesiones / autorización]
+  Security --> Auth[Autenticación y equipo]
+  Auth --> Prisma[Prisma]
+  Prisma --> DB[(MySQL8.4)]
+  Security --> Sessions[PrismaSessionStore]
+  Sessions --> DB
+  Auth --> Mail[Bandeja privada de desarrollo]
+```
 
-Team members and assigned roles: **pending team input** (4–5 members required). Public repository URL, evidence of each member's actual commits, presentation, performance results, final diagrams and `v1.0-b1` tag remain pending. No release tag has been created.
+- [Plan y auditoría de migración](docs/MIGRATION_PLAN.md).
+- [Modelo de datos y diagrama ER](docs/DATA_MODEL.md).
+- [Autenticación, seguridad y adaptación visual](docs/AUTHENTICATION.md).
+- [Evidencias de fase1](docs/PHASE1_VERIFICATION.md).
+- [Progreso, resultados y siguientes tareas](PROGRESS.md).
 
-### Uso de IA / AI assistance
+Stack: Node.js24 LTS, Express5, EJS, Tailwind4, Inter, Prisma7.10.1, MySQL8.4, Argon2id, express-session, Zod, Helmet, express-rate-limit, Vitest y Supertest. Socket.IO se incorporará al mismo servidor HTTP en fase4. No se implementan SPA ni microservicios en este bimestre.
 
-OpenAI Codex assisted with the source/guide audit, migration plan, phase checklist, foundation code and tests. Executed checks and limitations are recorded in PROGRESS.md. Team members must review, understand, test and be able to explain/modify assisted work during the defense; generated content is not evidence of a passing test or individual contribution.
+## Contexto académico y atribución
+
+Las referencias son `Food_Waste_Fighter-main.zip` y `Guía del Proyecto AppWebAv.docx`, aportadas al proyecto. Se reutiliza el HTML/JSP/CSS visual del ZIP por solicitud expresa; no se importa su manejo de contraseñas, sus cuentas ni su SQL destructivo. La autoría original no fue indicada en los adjuntos. Inter procede de `@fontsource/inter` y se distribuye bajo SIL Open Font License, incluida en el paquete.
+
+El equipo, sus integrantes y roles siguen pendientes de completar con información real. Las fases3–5 incluyen CRUD/dashboard/recetas, WebSockets autenticados, rendimiento y documentación de defensa. No se ha creado `v1.0-b1` ni se presenta la fase2 como entrega final del bimestre.
+
+### Uso de IA
+
+Se utilizó OpenAI Codex como apoyo para auditoría, planificación, implementación, adaptación de plantillas, pruebas y documentación. Los resultados ejecutados y sus límites se registran en PROGRESS.md. Se requiere la revisión, comprensión y explicación del código por el equipo durante la defensa; no se atribuyen aportes individuales ni métricas no comprobadas.

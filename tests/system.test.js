@@ -14,12 +14,14 @@ const app = (checkDatabase = vi.fn().mockResolvedValue(undefined), settings = co
   createApp({ config: settings, checkDatabase });
 
 describe('Phase 1 HTTP foundation (not business-feature acceptance)', () => {
-  it('renders the server-side Spanish foundation page and honest pending features', async () => {
+  it('renders the original Spanish landing markup with working authentication links', async () => {
     const response = await request(app()).get('/');
     expect(response.status).toBe(200);
     expect(response.headers['content-type']).toMatch(/text\/html/);
     expect(response.text).toContain('lang="es"');
-    expect(response.text).toContain('se implementarán en las siguientes fases');
+    expect(response.text).toContain('desperdicio de comida');
+    expect(response.text).toContain('/auth/register');
+    expect(response.text).not.toContain('2.3M');
     expect(response.text).toContain('/assets/styles.css');
   });
   it('liveness does not pretend to check MySQL', async () => {
@@ -74,6 +76,10 @@ describe('configuration fails closed without disclosing secrets', () => {
   });
   it.each([
     { PORT: '70000' },
+    { APP_ORIGIN: 'ftp://example.com' },
+    { APP_ORIGIN: 'https://user:password@example.com' },
+    { APP_ORIGIN: 'https://example.com/path' },
+    { NODE_ENV: 'production', APP_ORIGIN: 'http://example.com' },
     { DATABASE_URL: 'postgresql://unit:secret@localhost/unit' },
     { SESSION_SECRET: 'short-private-value' },
     { TRUST_PROXY: 'true' },

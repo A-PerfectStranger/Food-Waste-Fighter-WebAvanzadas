@@ -1,10 +1,15 @@
 import express from 'express';
+import session from 'express-session';
+import { PrismaSessionStore } from './config/session-store.js';
+import { authentication, csrfProtection, requireUser } from './middleware/security.js';
+import { authRoutes } from './modules/auth/auth.routes.js';
+import { usersRoutes } from './modules/users/users.routes.js';
 import helmet from 'helmet';
 import { fileURLToPath } from 'node:url';
 import { systemRoutes } from './modules/system/system.routes.js';
 import { errorHandler, notFound } from './middleware/errors.js';
 
-export function createApp({ config, checkDatabase }) {
+export function createApp({ config, checkDatabase, database, sendResetMail }) {
   const app = express();
   app.disable('x-powered-by');
   app.set('trust proxy', config.trustProxy);
@@ -23,9 +28,22 @@ export function createApp({ config, checkDatabase }) {
     } },
     strictTransportSecurity: https ? undefined : false,
   }));
+  app.use('/assets/fonts', express.static(fileURLToPath(new URL('../node_modules/@fontsource/inter/files/', import.meta.url)), { index: false }));
   app.use('/assets', express.static(fileURLToPath(new URL('./public/', import.meta.url))));
   app.use(express.urlencoded({ extended: false, limit: '16kb' }));
   app.use(systemRoutes({ checkDatabase }));
+  if (database) {
+    app.use(session({
+      name: 'fwf.sid', secret: config.SESSION_SECRET,
+      store: new PrismaSessionStore(database), resave: false, saveUninitialized: false, rolling: true,
+      cookie: { httpOnly: true, sameSite: 'lax', secure: https, maxAge: 8 * 60 * 60 * 1000 },
+    }));
+    app.use(csrfProtection(config));
+    app.use(authentication(database));
+    app.use('/auth', authRoutes({ database, config, sendResetMail }));
+    app.get('/dashboard', requireUser, (_req, res) => res.render('account'));
+    app.use('/team', usersRoutes({ database, config }));
+  }
   app.use(notFound);
   app.use(errorHandler);
   return app;

@@ -1,0 +1,8 @@
+<nav class="navbar"><div class="navbar-container"><div class="flex flex-wrap items-center justify-between gap-4 py-4">
+  <%- include('logo') %>
+  <div class="flex flex-wrap items-center gap-4">
+    <a href="/dashboard" class="text-green-700 font-medium">Mi cuenta</a>
+    <% if (currentUser.role === 'ADMIN') { %><a href="/team" class="text-green-700 font-medium">Equipo</a><% } %>
+    <form method="post" action="/auth/logout"><input type="hidden" name="_csrf" value="<%= csrfToken %>"><button class="text-gray-600 hover:text-green-700">Cerrar sesión</button></form>
+  </div>
+</div></div></nav>

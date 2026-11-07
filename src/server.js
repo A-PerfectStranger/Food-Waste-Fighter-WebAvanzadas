@@ -9,7 +9,7 @@ try {
   const config = parseEnv(process.env);
   database = createDatabase(config.DATABASE_URL);
   await checkDatabase(database);
-  const app = createApp({ config, checkDatabase: () => checkDatabase(database) });
+  const app = createApp({ config, database, checkDatabase: () => checkDatabase(database) });
   const server = createServer(app);
   server.on('error', async () => {
     console.error('HTTP server failed. Check HOST/PORT and port availability.');
@@ -18,6 +18,7 @@ try {
   });
   server.listen(config.PORT, config.HOST, () => {
     console.log(`Food Waste Fighter listening on ${config.HOST}:${config.PORT}`);
+    console.log(`Public origin: ${new URL(config.APP_ORIGIN).origin}; trusted proxy: ${config.trustProxy === 1 ? 'enabled' : 'disabled'}`);
   });
   let stopping = false;
   function shutdown() {

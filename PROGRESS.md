@@ -2,8 +2,8 @@
 
 ## State and scope
 
-- Current phase: **Phase 1 — Migration and environment setup** (specification A+B).
-- Overall: **PHASE 1 DONE**. Persistence/startup were verified automatically in the managed workspace. Successful execution in GitHub Codespaces was confirmed by the project owner on 2026-11-07; this external validation is reported evidence, not an agent-executed Codespaces test. Original Java runtime was reviewed statically only.
+- Current phase: **Phase 2 DONE — Codespaces acceptance confirmed; merge authorized**.
+- Overall: **PHASE 2 ACCEPTED**. Successful authentication in actual Codespaces was confirmed by the project owner after the trusted-proxy correction. Local45-test and browser evidence remain recorded separately. Merge of PR #2 explicitly authorized.
 - Scope: first bimester only. This checklist combines PROJECT_SPEC.md and the academic guide's first-bimester rubric. Attachment prose defines requirements, not separate tool instructions.
 - Statuses: TODO, IN_PROGRESS, BLOCKED, DONE. Checkboxes indicate verified completion only.
 
@@ -25,15 +25,15 @@
 
 ## Phase 2 — Data model, authentication and security (depends on Phase 1)
 
-- [ ] TODO: full Prisma models Company, User, Inventory, FoodItem, Category, Recipe, RecipeIngredient, ChatRoom, ChatMessage, PasswordResetToken and persistent Session storage; reviewed migrations, FK/tenant constraints, uniqueness, indexes and ER diagram.
-- [ ] TODO: synthetic company/user/inventory/category/recipe/chat seed; no real personal data or original passwords.
-- [ ] TODO: registration name/email/password validation in client + Zod server, normalized unique email, atomic company + ADMIN + inventory + general-room onboarding; controlled EMPLOYEE enrollment.
-- [ ] TODO: Argon2id salted hashes; login verified against MySQL; rotate session ID; login brute-force protection.
-- [ ] TODO: persistent express-session store; HttpOnly/SameSite cookies, Secure on HTTPS, Codespaces trusted proxy configuration, logout invalidation.
-- [ ] TODO: protect all business routes; ADMIN/EMPLOYEE authorization and company isolation; no client-controlled tenant/role trust.
-- [ ] TODO: random reset token, hash-only storage, one use, expiry, atomic consumption, private simulated mail, generic public response and session invalidation policy.
-- [ ] TODO: CSRF for mutations; Helmet/CSP, escaped EJS, parameterized Prisma, secret validation, clear safe errors.
-- [ ] TODO: automated registration, duplicate email, wrong password, protected route, reset expiry/reuse, role/isolation and persistent-session checks on separate test database.
+- [x] DONE: complete Prisma models Company, User, Inventory, FoodItem, Category, Recipe, RecipeIngredient, ChatRoom, ChatMessage, PasswordResetToken and Session. Additive migration applied to real development/test MySQL; compound tenant FKs, uniqueness, indexes, decimal/date SQL checks and ER diagram verified.
+- [x] DONE: idempotent fictional company/ADMIN/EMPLOYEE/inventory/category/food/recipe/ingredient/room/message seed. Initial passwords are random/discarded; repeated seed preserves accounts/passwords. Exact entity counts are verified.
+- [x] DONE: name/email/password/client confirmation validation with HTML5/JavaScript and server Zod; normalized unique email; atomic company + ADMIN + inventory + general-room creation; same-company ADMIN-only EMPLOYEE enrollment; public role/tenant injection rejected.
+- [x] DONE: Argon2id (19MiB, timeCost2, parallelism1), real MySQL login, session-ID regeneration, generic login failures and basic login/registration/recovery/enrollment IP limits.
+- [x] DONE: MySQL-backed express-session store, expiry, HttpOnly/SameSite=Lax, Secure with HTTPS, trusted Codespaces proxy configuration and logout invalidation. Persistence across application instances and expired-session rejection pass; no MemoryStore fallback.
+- [x] DONE: currently implemented account/team routes protected; role and company reloaded server-side; ADMIN/EMPLOYEE and tenant isolation verified at HTTP and FK levels. Future Phase 3/4 routes require the same guards.
+- [x] DONE: random256-bit reset token; hash-only MySQL storage, 30-minute expiry, new-link invalidation, atomic single consumption including concurrency, private mode0600 simulated outbox and generic public response. Password changes delete sessions and increment a version to reject stale concurrent saves.
+- [x] DONE: synchronizer CSRF and same-origin handling for native no-referrer forms; Helmet/CSP, escaped EJS, parametrized Prisma, safe errors and validated HTTP(S) origin/production HTTPS configuration. External scripts/fonts moved to local assets.
+- [x] DONE: real automated registration/duplicate/wrong-password/protected-route/role/tenant/session/reset expiry-reuse-concurrency tests on separate MySQL; desktop/mobile native-browser register/logout/recovery/reset/login flow verified. The original landing/login/registration markup, green/gray palette, logo, Inter and CSS identity are retained in EJS.
 
 ## Phase 3 — Business functionality (depends on Phase 2)
 
@@ -69,10 +69,9 @@
 
 ## Current task
 
-**Task:** Close Phase 1 and update/merge PR #1.
-**Status:** IN_PROGRESS. Runtime verification passed; successful Codespaces execution was confirmed externally. PR description and progress are being updated in impersonal language before merging.
-**Files:** `tests/database.integration.test.js`, `PROGRESS.md`, `docs/PHASE1_VERIFICATION.md`, `README.md`.
-**Last verified state:** 14 HTTP/configuration + 6 real MySQL integration tests pass; migrations, repeat seed, startup/shutdown and desktop/mobile browser verified. Codespaces operation confirmed by the project owner. Phase 2 has not started.
+**Task:** Merge the accepted Phase 2 PR #2.
+**Status:** IN_PROGRESS. Successful Codespaces operation was externally confirmed; merge explicitly requested. No Phase 3 implementation is included.
+**Last verified state:**45 automated tests and native HTTPS browser flows passed; the project owner confirmed the actual Codespaces result. This is externally reported acceptance, not an agent-run remote test.
 
 ## Completed work and evidence
 
@@ -97,13 +96,13 @@ These results describe the previous session. Superseded network/container-state 
 
 ## Issues and blockers
 
-- No active Phase 1 blocker. Prisma downloads and real persistence/startup pass. Successful Codespaces operation was confirmed by the project owner on 2026-11-07.
-- Historical limitation: full devcontainer image extraction exceeded disk capacity in this managed executor. It does not describe the separately tested Codespace. No local devcontainer build success is claimed.
-- Authentication, tenant enforcement, business screens, chat and release acceptance remain pending. Codespaces session/form checks will be exercised after authentication exists; WebSocket checks after Phase 4.
+- Origin gate identified remotely: FWF_FORM_ORIGIN_REJECTED, secure/proxy true, nonopaque mismatching Origin and same-origin metadata. Browser origin and fresh CLI APP_ORIGIN were confirmed equal. A proxy-rewriting reproduction passes after the bounded alternative origin check; the actual remote raw header/process startup snapshot was not captured.
+- The updated branch must be restarted and retried in the project-owner Codespace. No dependency install, migration or credential/cookie-policy change is required. PR #2 remains unmerged and Phase3 pending.
+- Historical managed-executor image-extraction disk limit remains recorded. No local devcontainer rebuild success is claimed.
 
 ## Next action
 
-Update PR #1 with the verified persistence/startup results and externally confirmed Codespaces validation, then merge. Phase 2 starts with the complete tenant-safe schema, followed by authentication/security. Original HTML/JSP markup and CSS will be adapted to EJS to preserve the existing visual identity, as requested by the project owner.
+Update `codex/phase-2-authentication`, restart the server and reopen the Codespaces register/login page. Startup now shows the actual loaded public origin and proxy setting. Confirm successful registration/login/logout before closing remote acceptance. If another rejection occurs, retain its safe FWF reference/runtime event. No secrets or full headers/.env are required.
 
 ## Historical session change log — initial foundation
 
@@ -155,3 +154,77 @@ Chronological entries below include intermediate states; the current authoritati
 - Successful operation in Codespaces was confirmed by the project owner. This closes the external acceptance gate; no additional Codespaces trace or agent-run rebuild is claimed.
 - PR #1 update and merge were explicitly requested. The PR is open, draft and mergeable at head `8cd7150`; remote `main` has no conflicting changes.
 - Status: IN_PROGRESS for the documentation/test follow-up commit, PR update and merge. The subsequent Phase 2 work will use a separate branch and preserve the original HTML/CSS appearance.
+
+## Phase 2 implementation — 2026-11-07
+
+- IN_PROGRESS: schema/migration and original-template adaptation inspected before edits. Public registration will atomically create a company, ADMIN, inventory and general room. Employees will be enrolled only by the same-company ADMIN; no public role/company assignment.
+- Security design: Argon2id; MySQL-backed express-session with rotation and version-based reset revocation; synchronizer CSRF + same-origin checks; one-use hashed reset tokens with atomic consumption; private ignored development outbox; server-side role/tenant resolution on every protected request.
+
+### Phase 2 implementation and verification results
+
+- PR #1: impersonal Spanish title/body updated; 20 Phase 1 tests passed again; commit `2726c43` pushed; draft status removed; merge performed with expected head SHA. GitHub returned `merged: true`, merge commit `aa6d158951571a82810c090a23c6b15550b0487c`. Phase 2 branch created from that merged main. No Phase 2 merge is authorized by the Phase 1 merge request.
+- Implemented schema/migration, auth validation/service/routes, PrismaSessionStore, CSRF/auth/role middleware, controlled employee enrollment, private reset mail, client validation and original-template EJS/CSS adaptation. Added DATA_MODEL.md and AUTHENTICATION.md; README rewritten in impersonal Spanish with real setup/recovery instructions and scope.
+- Migration generation first used `--from-migrations` and failed because no shadow database was configured. No schema changed. Generated the additive diff from the actual bootstrap datasource instead, inspected its SQL (no drops), added explicit CHECK constraints, then applied normally to development and isolated test MySQL.
+- `npm run build`, `npm run db:validate`, migration deploy and seed twice → PASS. `prisma migrate status` → up to date; `prisma migrate diff --from-config-datasource --to-schema prisma/schema.prisma --exit-code` → no difference. Seed assertions verify two users and one inventory/category/food/recipe/ingredient/room/message, including preservation of the original company and existing password hash.
+- Initial Phase 2 regression → 14 independent + 23 integration tests PASS. Added four origin/production configuration cases and the native-form regression; current suites → **18 independent + 24 integration = 42 PASS**. Integration additionally exercises stale sessions recreated after reset, decimal persistence, nonnegative stock/date checks, tenant FKs and targeted cleanup of each created session/company.
+- Browser testing initially used 127.0.0.1 instead of the configured localhost origin; the harness was aligned with APP_ORIGIN. It then exposed a real HTTP403 on native registration despite a valid session/token: Chromium sends `Origin: null` under Helmet's no-referrer policy. CSRF handling now accepts that case only with same-origin Fetch Metadata and a valid constant-time token check; cross-site opaque requests remain403. A dedicated automated regression passes.
+- `node work/phase2-browser.mjs` against actual `npm start` → PASS at1280x900 and390x844: original landing/forms, mobile menu, Inter loaded locally, exact original green600 RGB(22,163,74), no horizontal overflow/external network/page errors/CSP violations. Native HTML5 mismatch/match confirmation, registration, protected account/team, POST logout, private mode0600 outbox, token reset and new-password login all pass. Synthetic browser account/session/outbox records are removed after the run; screenshots remain in ignored work/.
+- `npm audit --omit=dev --audit-level=high` → 0 vulnerabilities reported. Final clean-install regression passed: `npm ci` (307 packages) → build → schema validation → 18 independent and 24 integration tests, all PASS (integration duration15.38s). `git diff --check` passes. Actual authentication over forwarded Codespaces HTTPS has not been tested in this managed workspace; no such result is claimed.
+
+- Final data check: development/test both contain zero `auth-*` and `browser-*` users. Development retains exactly two demo users; test retains zero. Session IDs created by integration agents are captured for targeted cleanup. All Phase 2 checkboxes are marked DONE based on executed verification. Separate PR publication was subsequently completed as recorded below.
+
+- Publication check: the initial staged whitespace check detected trailing spaces retained from the source JSP markup in new EJS files. Those spaces were removed without changing markup/classes; the staged check was repeated before commit. Private .env secret values were absent from all publishable files.
+
+### Phase 2 publication — DONE
+
+- Commit `b669e48a18249559ea5f3195986149a1879abe14` contains the verified Phase 2 implementation, tests, template reuse and documentation. Push to `origin/codex/phase-2-authentication` succeeded.
+- Draft [PR #2](https://github.com/A-PerfectStranger/Food-Waste-Fighter-WebAvanzadas/pull/2) created against `main` with an impersonal Spanish description, 42-test/browser evidence and the explicit pending Codespaces authentication check. GitHub confirmed open/draft/unmerged.
+- This documentation follow-up records completed publication. No further code changes or Phase 3 implementation were made; the next action is review/Codespaces verification, then tenant-safe business functionality.
+
+## Codespaces login rejection — 2026-11-07
+
+- IN_PROGRESS: HTTP403 reported when clicking Iniciar sesión in Chrome. The project owner confirmed a valid HTTPS forwarded origin and TRUST_PROXY=1. No secrets were requested or supplied.
+- Working branch/head match origin (`9e5203f`); the tree was clean. Existing CSRF handling requires same-origin Fetch Metadata for Origin:null. A trusted-proxy HTTPS regression without that optional header will be exercised before changing behavior.
+
+### Forwarded HTTPS rejection reproduction and correction
+
+- Confirmed report: rejection occurs on submitting login in Chrome, with an HTTPS Codespaces APP_ORIGIN and TRUST_PROXY=1. The configured origin was not found to be malformed; no secrets or full .env were requested.
+- Regression before correction: `npm run test:db` →24 PASS/1 FAIL; the new HTTPS-forwarded login test expected303 but received403. A real Chromium fixture with local HTTPS termination, HTTP upstream, Secure/HttpOnly cookie and intentionally stripped Sec-Fetch-* also reproduced loginRejected:true. No actual remote Codespaces headers were captured.
+- Fix: Origin:null no longer requires optional Fetch Metadata when that header is absent. The session-bound synchronizer token remains mandatory with byte-length/constant-time verification. If metadata is present it must be same-origin for the opaque-Origin case; explicit cross-site requests and explicit foreign origins are rejected. Missing-session and invalid-token cases remain403.
+- Browser after correction: real Chromium HTTPS → stripping proxy → HTTP Express → MySQL PASS for native login, session-ID rotation, protected account, Secure/HttpOnly cookies, logout and subsequent anonymous redirect. The disposable fixture uses a self-signed certificate only on loopback; no external TLS/checksum configuration was changed. Its key/certificate/harness remain ignored in work/; synthetic DB/session data are cleaned after each run.
+- Final regression: `npm test` →18/18 PASS; `npm run test:db` →25/25 PASS (15.89s); proxy browser fixture →PASS; `git diff --check` →PASS. No HTML/CSS, database migration, dependency or secret changes.
+
+- Existing PR #2 receives this focused four-file correction; no migration, dependency update or merge is required. Retest procedure: update `codex/phase-2-authentication`, restart the server, reopen `/auth/login`, and submit a fresh form. The project-owner Codespaces result remains pending until confirmed.
+
+## Persistent form rejection — 2026-11-07
+
+- IN_PROGRESS: the project owner reports the rejection in both login and registration. No confirmation that the actual running process includes2426631 is available yet; branch origin does contain that commit. The earlier proxy hypothesis is not treated as a confirmed remote diagnosis.
+- Current generic403 message conflates origin/header rejection, absent cookies, expired/unrecognized session and mismatching form token. Rejection diagnostics will identify the gate while withholding credentials, cookie/token values and reset URLs.
+
+- The project owner confirmed the running checkout is2426631 and the application is opened in a normal Chrome tab, not an embedded VS Code preview. No stale-version or embedded-preview explanation is assumed.
+- Added safe rejection references distinguishing absent cookie, unrecognized session, origin rejection, missing token and changed token. Runtime diagnostic JSON contains only the reference, HTTPS/proxy/origin booleans and a whitelisted Fetch Metadata classification; no body/query/credentials/cookies/session IDs/tokens. Existing acceptance rules are retained.
+- Regression verifies each diagnostic, secret-free error output and secret-free runtime logging, while the real HTTPS-proxy login/logout fixture continues to pass. Final suites PASS:18 independent +26 integration tests (15.43s), proxy browser fixture PASS, `git diff --check` PASS. Remote root cause remains unconfirmed until the diagnostic reference is supplied.
+
+## Confirmed form-origin mismatch — 2026-11-07
+
+- The project owner supplied the safe reference `FWF_FORM_ORIGIN_REJECTED` and runtime event: secureRequest:true, trustedProxyEnabled:true, forwardedHttps:true, originMatches:false, opaqueOrigin:false, fetchSite:same-origin.
+- This rules out missing cookie/session and a missing/opaque Origin as the first rejecting gate. It does not prove the supplied CSRF token matches because origin diagnostics take priority; token validation remains mandatory.
+- Effective APP_ORIGIN and the browser's location.origin are being compared. No credentials, cookie values or token-bearing URLs are needed. Configuration mismatch versus proxy header rewriting must be distinguished before another acceptance-rule change.
+
+## Matching external origins / differing upstream Origin — 2026-11-07
+
+- The project owner confirmed location.origin equals the canonical APP_ORIGIN printed by a fresh dotenv process. The runtime rejection still reports originMatches:false, opaqueOrigin:false, fetchSite:same-origin, trustedProxyEnabled:true and secureRequest:true. This indicates a differing upstream Origin or a different config snapshot in the running process; exact raw-header rewriting is not asserted as remotely captured evidence.
+- IN_PROGRESS: test a trusted HTTPS proxy that rewrites Origin while preserving the browser's forbidden-to-script Sec-Fetch-Site:same-origin metadata. Acceptance will still require the session-bound CSRF token; direct untrusted requests, cross-site/same-site signals, missing cookies and invalid tokens must remain rejected.
+
+- Before the new origin decision, the regression ran26 integration cases successfully and failed the added27th case (expected303, actual403). Real Chromium through an Origin-rewriting HTTPS proxy also produced loginRejected:true with opaqueOrigin:false and same-origin metadata, matching the observed remote flag pattern.
+- Implemented a second origin-authenticity source: exact browser Sec-Fetch-Site:same-origin, only with TRUST_PROXY=1 and req.secure=true. Every mutation still requires the valid session-bound token. Negative coverage includes cross-site/same-site metadata, no forwarded HTTPS, untrusted proxy, no cookie and invalid token. Normal direct origin checks and the opaque-origin compatibility rule remain in force.
+- Added a startup public-origin/proxy banner to reveal the configuration snapshot of the actual running process without logging secrets. No .env, dependency, migration, session-cookie flags, HTML layout or CSS changes were made.
+
+- Final verification: `npm test`18/18 PASS; `npm run test:db`27/27 PASS (15.77s); rewritten-Origin HTTPS Chrome fixture PASS for login/logout/registration, protected account and Secure/HttpOnly cookie; metadata-omitted fixture also PASS for the same native flows. `git diff --check` PASS. Existing wrong-origin/direct, cross-site, CSRF, credential, tenant, persistence and reset tests remain green.
+- The project-owner console Permissions-Policy notices are browser warnings, independent of the server's diagnosed403 origin gate. They were not treated as authentication failure evidence.
+
+- Publication: commit `d31f6d7` pushed successfully to `codex/phase-2-authentication`; PR #2 description updated in impersonal Spanish with45-test/native-browser evidence, exact bounded proxy rule and pending remote retest. This follow-up records publication; runtime code is unchanged.
+
+## Phase 2 Codespaces acceptance and merge authorization
+
+- The project owner confirmed "ya funciona" and explicitly requested merge. The remote acceptance gate is closed; earlier pending/rejection entries remain historical evidence. Publication of this acceptance record precedes merge.
