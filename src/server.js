@@ -18,6 +18,7 @@ try {
   });
   server.listen(config.PORT, config.HOST, () => {
     console.log(`Food Waste Fighter listening on ${config.HOST}:${config.PORT}`);
+    console.log(`Public origin: ${new URL(config.APP_ORIGIN).origin}; trusted proxy: ${config.trustProxy === 1 ? 'enabled' : 'disabled'}`);
   });
   let stopping = false;
   function shutdown() {

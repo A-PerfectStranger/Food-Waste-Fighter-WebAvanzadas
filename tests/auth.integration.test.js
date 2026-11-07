@@ -222,6 +222,30 @@ describe('Phase 2 real MySQL authentication and tenant boundaries', () => {
     expect(logout.status).toBe(303);
     expect((await request(httpsApp).get('/dashboard').on('response', remember).set('X-Forwarded-Proto', 'https').set('Cookie', cookie)).headers.location).toBe('/auth/login');
   });
+  it('accepts a proxy-rewritten Origin only with trusted HTTPS, browser same-origin metadata and a session token', async () => {
+    const { user } = await account();
+    const httpsApp = makeApp(parseEnv({ ...process.env, APP_ORIGIN: 'https://demo.app.github.dev', TRUST_PROXY: '1' }));
+    const form = remember(await request(httpsApp).get('/auth/login').set('X-Forwarded-Proto', 'https'));
+    const cookie = form.headers['set-cookie'][0].split(';')[0];
+    const token = form.text.match(/name="_csrf" value="([a-f0-9]{64})"/)[1];
+    const send = ({ instance = httpsApp, forwardedHttps = true, site = 'same-origin', cookieValue = cookie, tokenValue = token } = {}) => {
+      const attempt = request(instance).post('/auth/login').set('Origin', 'http://upstream.internal:3000').set('Sec-Fetch-Site', site);
+      if (forwardedHttps) attempt.set('X-Forwarded-Proto', 'https');
+      if (cookieValue) attempt.set('Cookie', cookieValue);
+      return attempt.type('form').send({ _csrf: tokenValue, email: user.email, password }).on('response', remember);
+    };
+    expect((await send({ site: 'cross-site' })).status).toBe(403);
+    expect((await send({ site: 'same-site' })).status).toBe(403);
+    expect((await send({ forwardedHttps: false })).status).toBe(403);
+    expect((await send({ cookieValue: null })).status).toBe(403);
+    expect((await send({ tokenValue: '0'.repeat(64) })).status).toBe(403);
+    const untrusted = makeApp(parseEnv({ ...process.env, APP_ORIGIN: 'https://demo.app.github.dev', TRUST_PROXY: '0' }));
+    expect((await send({ instance: untrusted })).status).toBe(403);
+    const accepted = await send();
+    expect(accepted.status).toBe(303);
+    expect(accepted.headers.location).toBe('/dashboard');
+    expect(accepted.headers['set-cookie'][0]).toContain('; Secure');
+  });
   it('limits repeated login attempts', async () => {
     const agent = trackedAgent(app);
     const token = await csrf(agent);

@@ -14,9 +14,13 @@ export function csrfProtection(config) {
     const fetchSite = req.get('Sec-Fetch-Site');
     // With Helmet's no-referrer policy Chromium uses Origin: null on native form
     // navigations. Fetch Metadata is optional and may be removed by a proxy.
-    // When absent, the session-bound synchronizer token remains authoritative;
-    // explicit cross-site metadata and foreign origins are still rejected.
-    const sameOrigin = fetchSite !== 'cross-site' && (!requestOrigin || requestOrigin === origin ||
+    // A trusted HTTPS proxy can also rewrite Origin. Sec-Fetch-Site is browser
+    // controlled (scripts cannot set Sec-* headers) and describes the public
+    // browser request before forwarding. Only its exact same-origin value is
+    // accepted as an alternative to the configured Origin, never same-site.
+    // The session-bound synchronizer token remains mandatory in every case.
+    const sameOriginViaProxy = config.trustProxy === 1 && req.secure && fetchSite === 'same-origin';
+    const sameOrigin = fetchSite !== 'cross-site' && (sameOriginViaProxy || !requestOrigin || requestOrigin === origin ||
       (requestOrigin === 'null' && (!fetchSite || fetchSite === 'same-origin')));
     const validToken = typeof provided === 'string' && provided.length === expected.length &&
       Buffer.byteLength(provided) === Buffer.byteLength(expected) &&
@@ -42,6 +46,7 @@ export function csrfProtection(config) {
         trustedProxyEnabled: Boolean(config.trustProxy),
         forwardedHttps: req.get('X-Forwarded-Proto')?.split(',')[0].trim() === 'https',
         originMatches: requestOrigin === origin, opaqueOrigin: requestOrigin === 'null',
+        sameOriginViaProxy,
         fetchSite: ['same-origin', 'same-site', 'cross-site', 'none'].includes(fetchSite) ? fetchSite : 'absent-or-other',
       }));
       return res.status(403).render('error', { title: 'Solicitud rechazada', message: messages[errorCode], errorCode });

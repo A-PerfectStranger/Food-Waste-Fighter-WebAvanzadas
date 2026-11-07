@@ -41,7 +41,7 @@ La ejecución de la fase 1 en Codespaces fue confirmada por la persona responsab
 | TEST_DATABASE_URL, TEST_MYSQL_* | Base y contenedor de pruebas independientes, puerto3307. |
 | BUSINESS_TIMEZONE | Zona de negocio prevista para la clasificación de caducidad de fase3. |
 
-El origen se deriva del Codespace al crear `.env`. Si se reutiliza un archivo de otro entorno, se actualizan APP_ORIGIN y TRUST_PROXY. En producción se exige APP_ORIGIN con HTTPS; la cookie utiliza Secure en HTTPS, HttpOnly y SameSite=Lax. Un origen distinto puede provocar el rechazo correcto de formularios por CSRF.
+El origen se deriva del Codespace al crear `.env`. Si se reutiliza un archivo de otro entorno, se actualizan APP_ORIGIN y TRUST_PROXY. En producción se exige APP_ORIGIN con HTTPS; la cookie utiliza Secure en HTTPS, HttpOnly y SameSite=Lax. El arranque imprime el origen canónico que cargó el proceso. Tras editar .env se reinicia el servidor. La protección exige siempre el token de sesión; bajo HTTPS y el proxy configurado admite la señal de navegador `Sec-Fetch-Site: same-origin` si el proxy cambia Origin. Fuera de ese caso se comprueba el origen configurado.
 
 El volumen `mysql_data` conserva desarrollo; `docker compose stop` mantiene los datos. Las contraseñas de un volumen inicializado no cambian al editar `.env`. No se requieren reinicios destructivos ni la ejecución del SQL original.
 

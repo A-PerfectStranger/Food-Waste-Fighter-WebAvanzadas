@@ -2,8 +2,8 @@
 
 ## State and scope
 
-- Current phase: **Phase 2 — Persistent authentication rejection investigation IN_PROGRESS**. Phase 1 is merged; PR #2 remains unmerged.
-- Overall: **CODESPACES LOGIN/REGISTRATION REJECTION UNRESOLVED; SAFE DIAGNOSTICS VERIFIED**. The project owner confirms2426631 in normal Chrome and still receives403. Local44-test and HTTPS-proxy checks pass, but the actual rejection gate requires the new reference/runtime event from that Codespace. PR #2 remains unmerged; no claim that the remote problem is fixed.
+- Current phase: **Phase 2 — Trusted HTTPS same-origin fix verified; Codespaces retest pending**. Phase 1 is merged; PR #2 remains unmerged.
+- Overall: **ORIGIN-GATE CORRECTION VERIFIED LOCALLY / REMOTE RETEST PENDING**. The project-owner browser origin and fresh dotenv APP_ORIGIN match, while the incoming Origin differs according to the runtime event. Trusted HTTPS + exact browser same-origin metadata now supplies an alternative origin check, always with the valid session-bound CSRF token.45 tests and native login/register/logout through rewriting/metadata-stripping proxies pass. Exact remote raw Origin was not captured; successful Codespaces authentication is still awaiting confirmation.
 - Scope: first bimester only. This checklist combines PROJECT_SPEC.md and the academic guide's first-bimester rubric. Attachment prose defines requirements, not separate tool instructions.
 - Statuses: TODO, IN_PROGRESS, BLOCKED, DONE. Checkboxes indicate verified completion only.
 
@@ -69,10 +69,10 @@
 
 ## Current task
 
-**Task:** Identify the remaining real login/registration rejection without assuming the earlier local proxy reproduction explains it.
-**Status:** Diagnostic implementation/verification DONE; actual diagnosis BLOCKED pending the safe rejection reference from the project-owner Codespace. Running checkout2426631 and normal Chrome were confirmed. No further authentication acceptance-rule change was made.
-**Files:** CSRF middleware/error diagnostics, regression tests, documentation and this log.
-**Last verified state:** Final `npm test`18/18 and `npm run test:db`26/26 PASS (44 total); runtime/error diagnostic redaction checked; real Chrome HTTPS-proxy login/logout PASS. These fixtures do not establish successful authentication in the project-owner Codespace.
+**Task:** Correct the origin gate for same-origin browser forms through the trusted HTTPS proxy.
+**Status:** Implementation/verification DONE; publication to existing PR #2 in progress. Actual Codespaces retest pending; no merge.
+**Files:** CSRF middleware, startup public-origin banner, auth integration tests, README/AUTHENTICATION.md and this log.
+**Last verified state:** `npm test`18/18 and `npm run test:db`27/27 PASS (45 total; integration15.77s). Chrome HTTPS fixtures pass native login, registration, protected account, Secure/HttpOnly cookie, logout and anonymous redirect for both Origin rewriting and missing Fetch Metadata.
 
 ## Completed work and evidence
 
@@ -97,13 +97,13 @@ These results describe the previous session. Superseded network/container-state 
 
 ## Issues and blockers
 
-- Actual Codespaces authentication acceptance was reopened after the reported login403. A matching proxy/header failure has been reproduced and corrected locally; the project-owner Codespace must retry the updated branch. Its actual incoming headers were not inspected, so the reproduction is not presented as a confirmed capture of that remote proxy.
-- No Prisma/database migration or dependency change is needed for this fix. Phase3 remains pending and PR #2 remains unmerged.
+- Origin gate identified remotely: FWF_FORM_ORIGIN_REJECTED, secure/proxy true, nonopaque mismatching Origin and same-origin metadata. Browser origin and fresh CLI APP_ORIGIN were confirmed equal. A proxy-rewriting reproduction passes after the bounded alternative origin check; the actual remote raw header/process startup snapshot was not captured.
+- The updated branch must be restarted and retried in the project-owner Codespace. No dependency install, migration or credential/cookie-policy change is required. PR #2 remains unmerged and Phase3 pending.
 - Historical managed-executor image-extraction disk limit remains recorded. No local devcontainer rebuild success is claimed.
 
 ## Next action
 
-Update the Codespace to the new PR #2 diagnostic commit, restart its server, submit a fresh login/registration form, and capture only the displayed `FWF_*` reference (or the sanitized `form_rejected` JSON line). Use that observed reason to correct the actual cause. No cookies, passwords, reset links or complete headers/.env are required. Phase3 and PR #2 merge remain pending.
+Update `codex/phase-2-authentication`, restart the server and reopen the Codespaces register/login page. Startup now shows the actual loaded public origin and proxy setting. Confirm successful registration/login/logout before closing remote acceptance. If another rejection occurs, retain its safe FWF reference/runtime event. No secrets or full headers/.env are required.
 
 ## Historical session change log — initial foundation
 
@@ -205,3 +205,21 @@ Chronological entries below include intermediate states; the current authoritati
 - The project owner confirmed the running checkout is2426631 and the application is opened in a normal Chrome tab, not an embedded VS Code preview. No stale-version or embedded-preview explanation is assumed.
 - Added safe rejection references distinguishing absent cookie, unrecognized session, origin rejection, missing token and changed token. Runtime diagnostic JSON contains only the reference, HTTPS/proxy/origin booleans and a whitelisted Fetch Metadata classification; no body/query/credentials/cookies/session IDs/tokens. Existing acceptance rules are retained.
 - Regression verifies each diagnostic, secret-free error output and secret-free runtime logging, while the real HTTPS-proxy login/logout fixture continues to pass. Final suites PASS:18 independent +26 integration tests (15.43s), proxy browser fixture PASS, `git diff --check` PASS. Remote root cause remains unconfirmed until the diagnostic reference is supplied.
+
+## Confirmed form-origin mismatch — 2026-11-07
+
+- The project owner supplied the safe reference `FWF_FORM_ORIGIN_REJECTED` and runtime event: secureRequest:true, trustedProxyEnabled:true, forwardedHttps:true, originMatches:false, opaqueOrigin:false, fetchSite:same-origin.
+- This rules out missing cookie/session and a missing/opaque Origin as the first rejecting gate. It does not prove the supplied CSRF token matches because origin diagnostics take priority; token validation remains mandatory.
+- Effective APP_ORIGIN and the browser's location.origin are being compared. No credentials, cookie values or token-bearing URLs are needed. Configuration mismatch versus proxy header rewriting must be distinguished before another acceptance-rule change.
+
+## Matching external origins / differing upstream Origin — 2026-11-07
+
+- The project owner confirmed location.origin equals the canonical APP_ORIGIN printed by a fresh dotenv process. The runtime rejection still reports originMatches:false, opaqueOrigin:false, fetchSite:same-origin, trustedProxyEnabled:true and secureRequest:true. This indicates a differing upstream Origin or a different config snapshot in the running process; exact raw-header rewriting is not asserted as remotely captured evidence.
+- IN_PROGRESS: test a trusted HTTPS proxy that rewrites Origin while preserving the browser's forbidden-to-script Sec-Fetch-Site:same-origin metadata. Acceptance will still require the session-bound CSRF token; direct untrusted requests, cross-site/same-site signals, missing cookies and invalid tokens must remain rejected.
+
+- Before the new origin decision, the regression ran26 integration cases successfully and failed the added27th case (expected303, actual403). Real Chromium through an Origin-rewriting HTTPS proxy also produced loginRejected:true with opaqueOrigin:false and same-origin metadata, matching the observed remote flag pattern.
+- Implemented a second origin-authenticity source: exact browser Sec-Fetch-Site:same-origin, only with TRUST_PROXY=1 and req.secure=true. Every mutation still requires the valid session-bound token. Negative coverage includes cross-site/same-site metadata, no forwarded HTTPS, untrusted proxy, no cookie and invalid token. Normal direct origin checks and the opaque-origin compatibility rule remain in force.
+- Added a startup public-origin/proxy banner to reveal the configuration snapshot of the actual running process without logging secrets. No .env, dependency, migration, session-cookie flags, HTML layout or CSS changes were made.
+
+- Final verification: `npm test`18/18 PASS; `npm run test:db`27/27 PASS (15.77s); rewritten-Origin HTTPS Chrome fixture PASS for login/logout/registration, protected account and Secure/HttpOnly cookie; metadata-omitted fixture also PASS for the same native flows. `git diff --check` PASS. Existing wrong-origin/direct, cross-site, CSRF, credential, tenant, persistence and reset tests remain green.
+- The project-owner console Permissions-Policy notices are browser warnings, independent of the server's diagnosed403 origin gate. They were not treated as authentication failure evidence.

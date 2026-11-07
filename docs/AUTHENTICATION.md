@@ -22,7 +22,12 @@ La sesión caducada se elimina al consultarse. Los campos sensibles no se incluy
 
 ## Protección de formularios
 
-Cada sesión dispone de un token CSRF aleatorio. Todas las mutaciones exigen ese token, con comparación de longitud de bytes y comparación constante; se rechazan valores multibyte de longitud incompatible. Los orígenes ajenos se rechazan. Chromium puede enviar `Origin: null` en formularios nativos bajo Referrer-Policy:no-referrer; si se recibe Fetch Metadata, se exige `same-origin` para ese caso. Si el navegador o el proxy omiten ese encabezado opcional, se acepta únicamente con el token CSRF válido vinculado a la sesión. Una petición sin cookie de sesión o con token incorrecto se rechaza. Los orígenes explícitos ajenos y la metadata `cross-site` se rechazan incluso si se presenta un token válido.
+Cada sesión dispone de un token CSRF aleatorio. Todas las mutaciones exigen ese token vinculado a la sesión, con comparación de longitud de bytes y comparación constante. Una petición sin cookie de sesión o con token incorrecto se rechaza siempre.
+
+La comprobación de origen admite dos fuentes: la coincidencia con APP_ORIGIN o, únicamente con TRUST_PROXY=1 y HTTPS reconocido por Express, el encabezado del navegador `Sec-Fetch-Site: same-origin`. Esta segunda fuente permite que un proxy modifique Origin sin rechazar un formulario legítimo; los scripts del navegador no pueden establecer cabeceras `Sec-*`. No sustituye la validación del token. El valor `same-site`, la ausencia de metadata, HTTP sin TLS reconocido o un proxy no configurado no habilitan esa excepción. Los orígenes ajenos siguen rechazándose fuera de esa combinación, y metadata `cross-site` se rechaza siempre.
+
+Chromium puede enviar `Origin: null` bajo Referrer-Policy:no-referrer. Si Fetch Metadata está presente, se exige `same-origin` para ese caso; si se omite, se mantiene la compatibilidad mediante el token CSRF de sesión. Se conservan las comprobaciones de cookie/token y la política de privacidad.
+
 
 Zod valida tipos, longitudes, correo, confirmación y campos desconocidos en el servidor. HTML5 valida campos requeridos, formato, límites y longitud; el JavaScript local valida la confirmación. EJS escapa los valores persistidos y los mensajes.
 
@@ -55,3 +60,9 @@ El403 mantiene la protección y muestra una referencia sin datos sensibles:
 En ejecución de desarrollo/producción se registra `form_rejected` con la referencia y banderas de HTTPS/proxy/origen, además del tipo de Fetch Metadata. No se registran contraseñas, correos, cuerpo, parámetros de URL, valores de cookie, identificadores de sesión ni tokens. Se puede compartir esa referencia o la línea JSON de ese evento para diagnosticar el fallo. No se deben compartir cabeceras completas ni archivos .env.
 
 La recepción de ese403 ocurre antes de procesar el registro o validar las credenciales: esa petición rechazada no crea una cuenta ni inicia sesión.
+
+## HTTPS reenviado y origen en ejecución
+
+El servidor imprime al arrancar el origen público canónico y si el proxy está habilitado; solo se incluyen valores públicos, sin credenciales. Esto permite distinguir una configuración modificada en disco de la que cargó el proceso activo. Se requiere reiniciar el servidor después de modificar .env.
+
+Las pruebas incluyen un proxy HTTPS real que conserva la metadata del navegador pero reescribe Origin hacia su destino HTTP interno. Login, registro y logout mantienen cookie Secure/HttpOnly y token de sesión. Esta reproducción coincide con las banderas reportadas por Codespaces, pero no se presenta como una captura del valor exacto reescrito por el proxy remoto.
