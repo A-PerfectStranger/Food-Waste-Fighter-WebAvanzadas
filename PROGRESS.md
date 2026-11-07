@@ -2,8 +2,8 @@
 
 ## State and scope
 
-- Current phase: **Phase 4 DONE AND ACCEPTED — merge authorized; Phase 5 TODO**.
-- Overall: **PHASE 4 ACCEPTED BY THE OWNER; PR #4 MERGE AUTHORIZED**. The owner explicitly closed Phase 4 and requested immediate merge. This acceptance supersedes the earlier draft gate. The 99-test and local HTTP/HTTPS/wss evidence remains recorded; no new remote Codespaces traces are claimed.
+- Current phase: **Phase 4 DONE, ACCEPTED AND MERGED — Phase 5 TODO**.
+- Overall: **PHASES 1–4 COMPLETE AND MERGED INTO MAIN**. The owner explicitly closed Phase 4 and authorized merge. PR #4 merged as `da6e1141989cc0898a79427d30e5746130d5a3df`; the environment now checks out main and tracks origin/main. The 99-test/local browser evidence and owner's acceptance are recorded separately from any future detailed remote traces.
 - Scope: first bimester only. This checklist combines PROJECT_SPEC.md and the academic guide's first-bimester rubric. Attachment prose defines requirements, not separate tool instructions.
 - Statuses: TODO, IN_PROGRESS, BLOCKED, DONE. Checkboxes indicate verified completion only.
 
@@ -64,15 +64,15 @@
 - [ ] TODO: architecture and ER diagrams updated to implemented code; complete README (stack, env, setup, diagrams, members/roles, AI use).
 - [ ] TODO: proposed schedule and work allocation for 4–5 people; actual names/contributions supplied by team, never invented.
 - [ ] TODO: 15-minute presentation + 5-minute questions; all members speak, screens/demo script, hash/validation/authenticated-WebSocket security evidence, test results, conclusions/lessons and AI declaration.
-- [ ] TODO: actual Codespaces forwarded HTTPS verification of new Phase 3 forms/navigation and Phase 4 Socket.IO wss/two users, including cookies and CSRF; record evidence without claiming local tests prove it. Prior Phase 2 owner acceptance remains recorded separately.
+- [ ] TODO: collect detailed Codespaces forwarded HTTPS/wss/two-user evidence for Phase 5 defense, including cookie/CSRF traces when available. Phase 4 is already accepted by the owner and merged; this evidence task is not a reopened acceptance gate. Do not claim local tests are remote traces.
 - [ ] TODO: docs/second-bimester-roadmap.md (documentation only); no second-bimester implementation.
 - [ ] TODO: public repository link, actual commits by all members, no credentials/PII, prepare v1.0-b1 only after validation; presentation/source link and evidence submitted by team to course platform.
 
 ## Current task
 
 **Task:** Merge accepted Phase 4 PR #4 and synchronize the environment with remote main.
-**Status:** IN_PROGRESS — owner explicitly declared Phase 4 complete and authorized merge. PR #4 is conflict-free; local and remote feature heads match. Publishing this acceptance record before merge.
-**Last verified state:** 99 automated tests and native HTTP/HTTPS-proxy/wss browser flows passed earlier in this session; runtime source is unchanged. Current `/ready` reports ready/database up. GitHub reports no commit statuses or PR workflow runs; absence of CI is not reported as a CI pass.
+**Status:** DONE — PR #4 merged with expected-head protection; main checked out and synchronized. Phase 5 is next.
+**Last verified state:** GitHub returned merged:true and merge SHA `da6e1141989cc0898a79427d30e5746130d5a3df`. Runtime/dependency/schema/test files are identical to the already verified feature head; 99-test/native-browser evidence remains applicable. The application reports ready/database up. Post-merge documentation records acceptance and completion without inventing remote test traces.
 
 ## Completed work and evidence
 
@@ -108,7 +108,7 @@ Begin Phase 5: full security/accessibility review, reproducible query/performanc
 measurement and academic documentation/rubric evidence. Verify the new screens,
 secure cookies and two distinct users over actual forwarded Codespaces HTTPS/wss.
 PR #3 is already merged; its historical draft status is not a current blocker.
-Merge accepted Phase 4 PR #4, synchronize main and proceed to Phase 5; no release tag yet.
+Phase 4 PR #4 is merged and main is synchronized. Proceed to Phase 5; no release tag yet.
 
 ## Historical session change log — initial foundation
 
@@ -395,3 +395,13 @@ Chronological entries below include intermediate states; the current authoritati
 - Before changes: clean local feature branch and remote PR head both `d6b9c07426fe69c39d43c005bd53fe08e4174095`; remote main `2d49858`. PR #4 open/draft and mergeable, no conflicts. No remote statuses or workflow runs were reported. The existing 99-test/browser result remains valid for unchanged runtime code.
 - The checkout's fetch configuration tracks main only; explicitly fetched the Phase 4 branch to verify its head. Application `/ready` returns ready/database up. Acceptance documentation is published before removing draft status and merging with an expected-head check.
 - Owner acceptance is recorded as acceptance, not an invented agent-run capture of remote Codespaces traffic. Detailed remote traces may still be collected for Phase 5 defense evidence; they no longer block Phase 4 or this authorized merge.
+
+
+### Phase 4 merge and environment synchronization — DONE
+
+- Acceptance commit `8a29be677e1424f7f837f10d83c3c69b5aa1e685` pushed to the feature branch; PR description updated with the owner's closure. Draft status removed. Merge executed with that exact expected head, preserving protection against concurrent changes.
+- GitHub confirmed **merged:true**, merge commit **`da6e1141989cc0898a79427d30e5746130d5a3df`** for [PR #4](https://github.com/A-PerfectStranger/Food-Waste-Fighter-WebAvanzadas/pull/4).
+- Fetched new origin/main and created local main tracking it; the working tree was clean. Comparison of src, package/lockfile, Prisma, scripts and tests against the accepted feature head is empty. The environment already contains the verified dependencies/generated assets and running Phase 4 code, so no unnecessary reinstall/restart or repeat of unchanged tests is claimed.
+- Updated README, protocol/migration notes and this current-state record to reflect acceptance/merge. The owner's acceptance closes the Phase 4 gate; any detailed remote evidence collected later belongs to the Phase 5 defense. No remote trace is invented, no data reset, deployment or release tag performed.
+
+- Final environment checks: `npm ls --omit=dev --depth=0` PASS; development/test MySQL containers both healthy; `/ready` returns `{status:ready,database:up}`. Post-merge documentation whitespace check PASS.

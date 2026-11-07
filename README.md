@@ -2,7 +2,7 @@
 
 Aplicación académica para una cafetería o restaurante pequeño: control de alimentos, aprovechamiento de ingredientes y coordinación del personal. Se utiliza un monolito Node.js con vistas renderizadas en el servidor.
 
-**Estado:** fases 1–3 fusionadas en `main` (PR #1–#3). La fase 3 incorpora dashboard, inventario CRUD, búsqueda/paginación, categorías, caducidad y consulta de recetas, conservando las plantillas y estilos del proyecto original. La fase 4 añade chat Socket.IO autenticado, historial MySQL, presencia y avisos de inventario por empresa. El estado y las evidencias se conservan en [PROGRESS.md](PROGRESS.md).
+**Estado:** fases 1–4 aceptadas y fusionadas en `main` (PR #1–#4). La fase 3 incorpora dashboard, inventario CRUD, búsqueda/paginación, categorías, caducidad y consulta de recetas, conservando las plantillas y estilos del proyecto original. La fase 4 añade chat Socket.IO autenticado, historial MySQL, presencia y avisos de inventario por empresa. El estado y las evidencias se conservan en [PROGRESS.md](PROGRESS.md).
 
 ## Ejecución íntegra en GitHub Codespaces
 
@@ -24,7 +24,7 @@ npm run dev
 
 4. El puerto3000 se abre desde el panel **Ports**, con visibilidad privada. El servidor escucha en `0.0.0.0`. `/health` comprueba HTTP y `/ready` consulta MySQL; el arranque exige disponibilidad de la base de datos.
 
-La ejecución de las fases 1 y 2 en Codespaces fue confirmada por la persona responsable del proyecto. Las pantallas empresariales y el chat se comprueban localmente; la aceptación de esas pantallas y de wss/dos usuarios en el HTTPS reenviado real de Codespaces sigue pendiente y no se deduce de esas pruebas.
+La ejecución de las fases 1 y 2 en Codespaces fue confirmada por la persona responsable del proyecto. La persona responsable dio por finalizada la fase 4 y autorizó su merge. Se conservan las pruebas locales del chat y de HTTPS/wss; no se afirma haber capturado nuevas trazas remotas. La recopilación de evidencia detallada de Codespaces para la defensa corresponde a la fase 5 y no reabre la aceptación de la fase 4.
 
 ### Configuración
 
@@ -131,7 +131,7 @@ Stack: Node.js24 LTS, Express5, EJS, Tailwind4, Inter, Prisma7.10.1, MySQL8.4, A
 
 Las referencias son `Food_Waste_Fighter-main.zip` y `Guía del Proyecto AppWebAv.docx`, aportadas al proyecto. Se reutiliza el HTML/JSP/CSS visual del ZIP por solicitud expresa; no se importa su manejo de contraseñas, sus cuentas ni su SQL destructivo. La autoría original no fue indicada en los adjuntos. Inter procede de `@fontsource/inter` y se distribuye bajo SIL Open Font License, incluida en el paquete.
 
-El equipo, sus integrantes y roles siguen pendientes de completar con información real. La fase 5 incluye aceptación Codespaces wss, revisión de calidad, rendimiento y documentación de defensa. No se ha creado `v1.0-b1` ni se presenta el estado actual como entrega final del bimestre.
+El equipo, sus integrantes y roles siguen pendientes de completar con información real. La fase 5 incluye evidencia detallada Codespaces wss para la defensa, revisión de calidad, rendimiento y documentación académica. No se ha creado `v1.0-b1` ni se presenta el estado actual como entrega final del bimestre.
 
 ### Uso de IA
 

@@ -131,9 +131,10 @@ la otra registra un alimento con caducidad de hoy a cinco días: aparece el avis
 Una empresa distinta no recibe mensajes ni avisos. Dos pestañas del mismo usuario
 sirven para probar varias conexiones, pero no representan dos usuarios distintos.
 
-La aceptación por el HTTPS reenviado real de Codespaces, incluido wss y dos
-usuarios, sigue siendo una evidencia externa pendiente de fase 5. Las pruebas
-locales no la sustituyen.
+La persona responsable dio por finalizada la fase 4 y autorizó su merge en
+PR #4. La recopilación de trazas detalladas de Codespaces, incluido wss y dos
+usuarios, queda como evidencia de defensa de fase 5, sin reabrir la aceptación.
+Las pruebas locales no se presentan como capturas remotas.
 
 Trabajo asistido por OpenAI Codex; el equipo debe revisar y poder explicar el
 handshake, las autorizaciones, los eventos y los transportes.

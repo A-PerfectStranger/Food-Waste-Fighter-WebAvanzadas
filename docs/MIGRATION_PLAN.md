@@ -119,5 +119,6 @@ Express session middleware. The General room, paginated history, presence,
 strict authenticated events and post-persistence inventory notifications are
 implemented in the monolith. [REALTIME.md](REALTIME.md) documents handshake,
 origin/proxy handling, session revocation, events, limits and transport fallback.
-The earlier Phase 2/3 paragraphs describe their historical scope. Real forwarded
-Codespaces wss acceptance, performance and academic delivery remain Phase 5.
+The earlier Phase 2/3 paragraphs describe their historical scope. Phase 4 was subsequently accepted by the owner and merged through PR #4
+(`da6e114`). Detailed forwarded Codespaces evidence for the defense, performance
+and academic delivery remain Phase 5; no new remote trace is claimed.
