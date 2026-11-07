@@ -32,6 +32,7 @@ export function inventoryRoutes({ database, config, expirationPage = false }) {
       if (req.params.id) await service.find(req.user.companyId, req.params.id);
       try {
         const item = await service.save(req.user.companyId, readBusinessForm(foodSchema, req.body), req.params.id);
+        await req.app.locals.realtime?.inventoryChanged(req.user.companyId, item.id, req.params.id ? 'updated' : 'created');
         return await redirectWithNotice(req, res, `/inventory/${item.id}`, req.params.id ? 'Producto actualizado.' : 'Producto registrado.');
       } catch (error) {
         if (!(error instanceof BusinessError) || error.status === 404) throw error;
@@ -47,6 +48,7 @@ export function inventoryRoutes({ database, config, expirationPage = false }) {
       try { readBusinessForm(confirmationSchema, req.body); }
       catch (error) { if (!(error instanceof BusinessError)) throw error; return res.status(400).render('inventory/delete', { item, error: error.message }); }
       await service.remove(req.user.companyId, item.id);
+      await req.app.locals.realtime?.inventoryChanged(req.user.companyId, item.id, 'deleted');
       return redirectWithNotice(req, res, '/inventory', 'Producto eliminado.');
     });
   }

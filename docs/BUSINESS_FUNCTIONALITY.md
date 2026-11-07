@@ -123,12 +123,12 @@ en `work/` ignorado. Esto verifica formularios nativos, HTML5/JS, CSS/paleta,
 navegación y ausencia de desbordamiento/errores. No sustituye una aceptación
 de las nuevas pantallas en el HTTPS reenviado de Codespaces.
 
-## Siguiente fase
+## Integración con fase 4
 
-La fase 4 implementará chat, enlaces de navegación al chat y notificaciones
-de inventario en tiempo real con Socket.IO sobre el mismo servidor. No se añade
-un enlace o botón de chat sin funcionalidad. En esta fase, las alertas son
-información consultada al cargar la página; no se afirma actualización en vivo.
+La fase 4 incorpora el chat y su navegación, además de avisos de inventario en
+vivo después de mutaciones persistidas. Las métricas/tablas de fase 3 conservan
+la consulta de su carga inicial; el banner enlaza al inventario actualizado.
+El contrato y la verificación se describen en [REALTIME.md](REALTIME.md).
 
 Trabajo asistido por OpenAI Codex: adaptación de las plantillas del ZIP,
 implementación, revisión y verificación. Los resultados exactos y sus límites

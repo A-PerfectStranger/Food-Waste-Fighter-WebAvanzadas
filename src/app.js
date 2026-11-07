@@ -8,6 +8,7 @@ import { dashboardRoutes } from './modules/dashboard/dashboard.routes.js';
 import { inventoryRoutes } from './modules/inventory/inventory.routes.js';
 import { categoriesRoutes } from './modules/categories/categories.routes.js';
 import { recipesRoutes } from './modules/recipes/recipes.routes.js';
+import { chatRoutes } from './modules/chat/chat.routes.js';
 import helmet from 'helmet';
 import { fileURLToPath } from 'node:url';
 import { systemRoutes } from './modules/system/system.routes.js';
@@ -37,11 +38,13 @@ export function createApp({ config, checkDatabase, database, sendResetMail }) {
   app.use(express.urlencoded({ extended: false, limit: '16kb' }));
   app.use(systemRoutes({ checkDatabase }));
   if (database) {
-    app.use(session({
+    const sessionMiddleware = session({
       name: 'fwf.sid', secret: config.SESSION_SECRET,
       store: new PrismaSessionStore(database), resave: false, saveUninitialized: false, rolling: true,
       cookie: { httpOnly: true, sameSite: 'lax', secure: https, maxAge: 8 * 60 * 60 * 1000 },
-    }));
+    });
+    app.locals.sessionMiddleware = sessionMiddleware;
+    app.use(sessionMiddleware);
     app.use(csrfProtection(config));
     app.use(authentication(database));
     app.use((req, res, next) => { res.locals.currentPath = req.path; next(); });
@@ -53,6 +56,7 @@ export function createApp({ config, checkDatabase, database, sendResetMail }) {
     app.use('/categories', categoriesRoutes({ database, config }));
     app.use('/recipes', recipesRoutes({ database, config }));
     app.use('/team', usersRoutes({ database, config }));
+    app.use('/chat', chatRoutes({ database, config }));
   }
   app.use(notFound);
   app.use(errorHandler);

@@ -2,7 +2,7 @@
 
 Aplicación académica para una cafetería o restaurante pequeño: control de alimentos, aprovechamiento de ingredientes y coordinación del personal. Se utiliza un monolito Node.js con vistas renderizadas en el servidor.
 
-**Estado:** fases 1 y 2 fusionadas en `main` (PR #1 y #2). La fase 3 incorpora dashboard, inventario CRUD, búsqueda/paginación, categorías, caducidad y consulta de recetas, conservando las plantillas y estilos del proyecto original. El chat y las notificaciones en tiempo real corresponden a la fase 4. El estado y las evidencias se conservan en [PROGRESS.md](PROGRESS.md).
+**Estado:** fases 1–3 fusionadas en `main` (PR #1–#3). La fase 3 incorpora dashboard, inventario CRUD, búsqueda/paginación, categorías, caducidad y consulta de recetas, conservando las plantillas y estilos del proyecto original. La fase 4 añade chat Socket.IO autenticado, historial MySQL, presencia y avisos de inventario por empresa. El estado y las evidencias se conservan en [PROGRESS.md](PROGRESS.md).
 
 ## Ejecución íntegra en GitHub Codespaces
 
@@ -24,7 +24,7 @@ npm run dev
 
 4. El puerto3000 se abre desde el panel **Ports**, con visibilidad privada. El servidor escucha en `0.0.0.0`. `/health` comprueba HTTP y `/ready` consulta MySQL; el arranque exige disponibilidad de la base de datos.
 
-La ejecución de las fases 1 y 2 en Codespaces fue confirmada por la persona responsable del proyecto. Las nuevas pantallas de fase 3 se comprueban con MySQL y Chromium locales; su aceptación en el HTTPS reenviado de Codespaces queda pendiente y no se deduce de esas pruebas.
+La ejecución de las fases 1 y 2 en Codespaces fue confirmada por la persona responsable del proyecto. Las pantallas empresariales y el chat se comprueban localmente; la aceptación de esas pantallas y de wss/dos usuarios en el HTTPS reenviado real de Codespaces sigue pendiente y no se deduce de esas pruebas.
 
 ### Configuración
 
@@ -33,7 +33,7 @@ La ejecución de las fases 1 y 2 en Codespaces fue confirmada por la persona res
 | Variables | Uso |
 | --- | --- |
 | NODE_ENV, HOST, PORT | Modo y escucha HTTP; Node24 es obligatorio. |
-| APP_ORIGIN | Origen exacto del navegador: por ejemplo `http://localhost:3000`, o la URL HTTPS reenviada del Codespace. Se utiliza en CSRF y en los enlaces de recuperación. No admite rutas, credenciales ni parámetros. |
+| APP_ORIGIN | Origen exacto del navegador: por ejemplo `http://localhost:3000`, o la URL HTTPS reenviada del Codespace. Se utiliza en CSRF, Socket.IO y los enlaces de recuperación. No admite rutas, credenciales ni parámetros. |
 | TRUST_PROXY | `1` para el proxy de Codespaces; `0` para HTTP directo. |
 | DATABASE_URL | Conexión MySQL de la aplicación, en el propio entorno de Codespaces. |
 | SESSION_SECRET | Secreto de firma de sesiones, mínimo32 caracteres; se genera automáticamente. |
@@ -72,6 +72,12 @@ Para la demostración se recupera el acceso a la empresa ficticia del seed, que 
 
 Las pantallas adaptan `dashboard.jsp`, los formularios/listados de alimentos, `productosACaducar.jsp`, `recetas.jsp`, `detalleReceta.jsp` y `navbar.jsp` del ZIP suministrado. El CSS original se conserva, con fuente y compilación locales. No se inventan imágenes ni valores nutricionales ausentes del modelo. Las decisiones y permisos se detallan en [Funcionalidad empresarial](docs/BUSINESS_FUNCTIONALITY.md).
 
+## Chat y coordinación del equipo
+
+`/chat` muestra la sala General de la empresa, historial persistido (50 mensajes por página), personas conectadas y envío en tiempo real. Se exige la sesión HTTP vigente y su token en el handshake; cada evento y destinatario se reautoriza. El navegador negocia WebSocket y conserva polling como alternativa. Crear, editar o eliminar alimentos genera un aviso en las pantallas abiertas de la misma empresa, con advertencia de proximidad a caducar cuando corresponde.
+
+ADMIN puede dar de alta un EMPLOYEE en `/team`; ambos acceden desde perfiles separados para demostrar dos personas simultáneas. El contrato de eventos, límites y pasos de demostración están en [REALTIME.md](docs/REALTIME.md).
+
 ## Pruebas
 
 ```sh
@@ -83,7 +89,7 @@ docker compose --profile test up -d --wait mysql-test
 npm run test:db
 ```
 
-Las pruebas independientes cubren HTTP, configuración, fechas civiles y validación decimal. Las de integración ejercitan MySQL, seed, arranque/apagado, autenticación, sesión, recuperación, CSRF, permisos y aislamiento; además, CRUD real, confirmación, búsquedas/paginación, métricas, caducidad, categorías, recetas y XSS. Las pruebas de WebSockets se incorporarán en fase 4.
+Las pruebas independientes cubren HTTP, configuración, fechas civiles y validación decimal. Las de integración ejercitan MySQL, seed, arranque/apagado, autenticación, sesión, recuperación, CSRF, permisos y aislamiento; además, CRUD real, confirmación, búsquedas/paginación, métricas, caducidad, categorías, recetas y XSS. Las pruebas de Socket.IO incluyen dos usuarios reales, persistencia, aislamiento, origen/sesión/token, polling, presencia, límites, revocación y avisos de inventario.
 
 El ejecutor rechaza bases sin sufijo `_test`, protocolos distintos de MySQL y el nombre de desarrollo antes de migrar. Solo se eliminan registros creados por las pruebas; el servicio mysql-test usa tmpfs y credenciales independientes. Los puertos3306/3307 no requieren reenvío público.
 
@@ -105,22 +111,27 @@ flowchart LR
   Auth --> Mail[Bandeja privada de desarrollo]
   Security --> Business[Dashboard / inventario / categorías / recetas]
   Business --> Prisma
+  Browser <-->|Socket.IO / polling o WebSocket| Realtime[Chat y avisos en el mismo servidor]
+  Realtime --> Sessions
+  Realtime --> Prisma
+  Business -->|Cambio persistido| Realtime
 ```
 
 - [Plan y auditoría de migración](docs/MIGRATION_PLAN.md).
 - [Modelo de datos y diagrama ER](docs/DATA_MODEL.md).
 - [Autenticación, seguridad y adaptación visual](docs/AUTHENTICATION.md).
 - [Funcionalidad empresarial y conservación de estilos](docs/BUSINESS_FUNCTIONALITY.md).
+- [Chat, handshake, eventos y transportes](docs/REALTIME.md).
 - [Evidencias de fase1](docs/PHASE1_VERIFICATION.md).
 - [Progreso, resultados y siguientes tareas](PROGRESS.md).
 
-Stack: Node.js24 LTS, Express5, EJS, Tailwind4, Inter, Prisma7.10.1, MySQL8.4, Argon2id, express-session, Zod, Helmet, express-rate-limit, Vitest y Supertest. Socket.IO se incorporará al mismo servidor HTTP en fase4. No se implementan SPA ni microservicios en este bimestre.
+Stack: Node.js24 LTS, Express5, EJS, Tailwind4, Inter, Prisma7.10.1, MySQL8.4, Argon2id, express-session, Zod, Helmet, express-rate-limit, Vitest y Supertest. Socket.IO 4 comparte el servidor HTTP y la sesión persistente. No se implementan SPA ni microservicios en este bimestre.
 
 ## Contexto académico y atribución
 
 Las referencias son `Food_Waste_Fighter-main.zip` y `Guía del Proyecto AppWebAv.docx`, aportadas al proyecto. Se reutiliza el HTML/JSP/CSS visual del ZIP por solicitud expresa; no se importa su manejo de contraseñas, sus cuentas ni su SQL destructivo. La autoría original no fue indicada en los adjuntos. Inter procede de `@fontsource/inter` y se distribuye bajo SIL Open Font License, incluida en el paquete.
 
-El equipo, sus integrantes y roles siguen pendientes de completar con información real. Las fases 4–5 incluyen WebSockets autenticados, rendimiento y documentación de defensa. No se ha creado `v1.0-b1` ni se presenta el estado actual como entrega final del bimestre.
+El equipo, sus integrantes y roles siguen pendientes de completar con información real. La fase 5 incluye aceptación Codespaces wss, revisión de calidad, rendimiento y documentación de defensa. No se ha creado `v1.0-b1` ni se presenta el estado actual como entrega final del bimestre.
 
 ### Uso de IA
 

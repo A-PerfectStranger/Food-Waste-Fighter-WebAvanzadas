@@ -67,3 +67,13 @@ La recepción de ese403 ocurre antes de procesar el registro o validar las crede
 El servidor imprime al arrancar el origen público canónico y si el proxy está habilitado; solo se incluyen valores públicos, sin credenciales. Esto permite distinguir una configuración modificada en disco de la que cargó el proceso activo. Se requiere reiniciar el servidor después de modificar .env.
 
 Las pruebas incluyen un proxy HTTPS real que conserva la metadata del navegador pero reescribe Origin hacia su destino HTTP interno. Login, registro y logout mantienen cookie Secure/HttpOnly y token de sesión. Esta reproducción coincide con las banderas reportadas por Codespaces, pero no se presenta como una captura del valor exacto reescrito por el proxy remoto.
+
+
+## Sesiones en Socket.IO — fase 4
+
+El servidor comparte este mismo middleware y PrismaSessionStore con Engine.IO.
+El namespace exige además el token vinculado a la sesión; vuelve a consultar
+sesión, versión y empresa por evento y antes de cada entrega. Un logout/reset
+revoca también los sockets, sin que puedan recrear sesiones antiguas mediante
+un guardado propio. La política de origen para polling/WebSocket y la
+reconciliación de presencia se detallan en [REALTIME.md](REALTIME.md).

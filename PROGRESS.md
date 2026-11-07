@@ -2,8 +2,8 @@
 
 ## State and scope
 
-- Current phase: **Phase 3 DONE — implemented and locally verified; Phase 4 TODO**.
-- Overall: **PHASE 3 LOCALLY VERIFIED AND PUBLISHED — DRAFT PR #3**. Remote main `bedcdc1` includes accepted/merged Phase 2. `codex/phase-3-business` was pushed and [PR #3](https://github.com/A-PerfectStranger/Food-Waste-Fighter-WebAvanzadas/pull/3) opened against main. Historical Codespaces acceptance covers Phases 1–2; the new Phase 3 screens still require forwarded-HTTPS acceptance.
+- Current phase: **Phase 4 DONE — locally verified; Phase 5 TODO**.
+- Overall: **PHASE 3 DONE AND MERGED; PHASE 4 IMPLEMENTED AND LOCALLY VERIFIED**. Fresh `git fetch origin --prune` found `origin/main` at `2d49858` (merge PR #3); clean local `work` advanced from `bedcdc1` with `--ff-only`. The owner's Phase 3 completion is confirmed by the merged implementation. Historical publication entries below describe their original time, not current PR status.
 - Scope: first bimester only. This checklist combines PROJECT_SPEC.md and the academic guide's first-bimester rubric. Attachment prose defines requirements, not separate tool instructions.
 - Statuses: TODO, IN_PROGRESS, BLOCKED, DONE. Checkboxes indicate verified completion only.
 
@@ -30,14 +30,14 @@
 - [x] DONE: name/email/password/client confirmation validation with HTML5/JavaScript and server Zod; normalized unique email; atomic company + ADMIN + inventory + general-room creation; same-company ADMIN-only EMPLOYEE enrollment; public role/tenant injection rejected.
 - [x] DONE: Argon2id (19MiB, timeCost2, parallelism1), real MySQL login, session-ID regeneration, generic login failures and basic login/registration/recovery/enrollment IP limits.
 - [x] DONE: MySQL-backed express-session store, expiry, HttpOnly/SameSite=Lax, Secure with HTTPS, trusted Codespaces proxy configuration and logout invalidation. Persistence across application instances and expired-session rejection pass; no MemoryStore fallback.
-- [x] DONE: account/team and implemented Phase 3 business routes protected; role and company reloaded server-side; ADMIN/EMPLOYEE and tenant isolation verified at HTTP and FK levels. Future Phase 4 routes/events require the same guards.
+- [x] DONE: account/team and implemented Phase 3 business routes protected; role and company reloaded server-side; ADMIN/EMPLOYEE and tenant isolation verified at HTTP and FK levels. Phase 4 reuses the persistent session and revalidates socket events/recipients against MySQL.
 - [x] DONE: random256-bit reset token; hash-only MySQL storage, 30-minute expiry, new-link invalidation, atomic single consumption including concurrency, private mode0600 simulated outbox and generic public response. Password changes delete sessions and increment a version to reject stale concurrent saves.
 - [x] DONE: synchronizer CSRF and same-origin handling for native no-referrer forms; Helmet/CSP, escaped EJS, parametrized Prisma, safe errors and validated HTTP(S) origin/production HTTPS configuration. External scripts/fonts moved to local assets.
 - [x] DONE: real automated registration/duplicate/wrong-password/protected-route/role/tenant/session/reset expiry-reuse-concurrency tests on separate MySQL; desktop/mobile native-browser register/logout/recovery/reset/login flow verified. The original landing/login/registration markup, green/gray palette, logo, Inter and CSS identity are retained in EJS.
 
 ## Phase 3 — Business functionality (depends on Phase 2)
 
-- [x] DONE: protected dashboard: total, soon (0–5 days), expired and low-stock counts; three earliest alerts, up to two matching recipe suggestions, working inventory/account/logout navigation. Chat navigation depends on Phase 4.
+- [x] DONE: protected dashboard: total, soon (0–5 days), expired and low-stock counts; three earliest alerts, up to two matching recipe suggestions, working inventory/account/logout navigation. Working chat navigation was added in Phase 4.
 - [x] DONE: food CRUD create/list/by-ID/update/delete with explicit confirmation; seven fields including exact decimal quantity, unit, category, received/expiry DATEs and minimum stock.
 - [x] DONE: company-scoped name/category search, SQL skip/take pagination (10), stable expiry/ID ordering and existing scoped indexes; ID/category/inventory authorization with real MySQL evidence.
 - [x] DONE: HTML5/client date-order + strict Zod server validation, nonnegative Decimal(12,3) bounds, valid dates/ranges/lengths; clear errors, preserved input and session-held success notices.
@@ -48,17 +48,17 @@
 
 ## Phase 4 — Real-time communication (depends on Phases 2–3)
 
-- [ ] TODO: Socket.IO shares Express HTTP server; reuse persistent session at handshake, reject anonymous connections and inappropriate origins.
-- [ ] TODO: company general room; authorize room/history/events, prevent cross-company access and client-controlled identity.
-- [ ] TODO: real-time messages between two simultaneous users, persisted MySQL history and connected-users indicator.
-- [ ] TODO: server validation of content/length/format, escaping/textContent, XSS protection, safe errors, appropriate connection limits.
-- [ ] TODO: additional inventory change/near-expiry notification without reload, isolated per company.
-- [ ] TODO: add working chat navigation to the dashboard/shared navbar once the chat routes exist.
-- [ ] TODO: tests: anonymous socket rejected, cross-company denied, persistent history and two-client live exchange; document handshake/events/transport fallback.
+- [x] DONE: Socket.IO 4 shares the production Express HTTP server and exact persistent session middleware; authenticated namespace requires the session-bound token; anonymous/forged/expired sessions and inappropriate origins rejected. Browser same-origin polling and bounded trusted HTTPS proxy behavior verified.
+- [x] DONE: General company room; HTTP/socket history and events scoped to current server-resolved company/user; room/cursor/identity injection and cross-company delivery rejected.
+- [x] DONE: two distinct simultaneous users exchange persisted MySQL messages; 50-message cursor history with timestamp/ID ordering; distinct-user presence across tabs and disconnects. Logout/version/expiry revocation checked per event/recipient and every 15 seconds.
+- [x] DONE: strict Zod 1–2000-character text/control validation; EJS escaping and textContent; safe errors; 5 sockets/user, 100/company, 60 events/minute/user across tabs, 16KiB packets. UI preserves unconfirmed input and never automatically retries a send.
+- [x] DONE: persisted food create/update/delete emits company-only inventory notification; near-expiry/expired classification, live banner without reload; invalid/foreign writes do not emit. Metrics/tables remain their initial server-rendered snapshot with a link to refresh inventory.
+- [x] DONE: working chat route and dashboard/shared navbar navigation; original local Inter and green/neutral style, desktop/mobile/narrow layouts verified.
+- [x] DONE: 2 independent origin-policy cases + 14 real Socket.IO/MySQL integration cases, including two users, persistence, isolation, presence, polling, revocation, limits, notifications, safe failure and active shutdown. Full regression **43 independent + 56 integration = 99 PASS**. Handshake/events/transport/limits documented in docs/REALTIME.md. Native Chromium HTTP and rewritten-Origin HTTPS proxy/wss flows pass; actual remote Codespaces acceptance remains Phase 5.
 
 ## Phase 5 — Quality, academic documentation and delivery (after mandatory features)
 
-- [ ] TODO: regression/security/accessibility and contrast review of HTTP and Socket.IO; minimum 5 meaningful automated tests, target 8+ specified business cases; separate DB and no destructive development resets. Current HTTP/business suites already exceed the numeric minimum; Socket.IO remains pending.
+- [ ] TODO: regression/security/accessibility and contrast review of HTTP and Socket.IO; minimum 5 meaningful automated tests, target 8+ specified business cases; separate DB and no destructive development resets. Current HTTP/business/Socket.IO suites already exceed the numeric minimum; complete Phase 5 review remains pending.
 - [ ] TODO: reproducible measured performance (Lighthouse or query latency), pagination/index evidence, live updates without refresh.
 - [ ] TODO: business problem, measurable general/specific objectives; prioritized user stories and guide/rubric compliance matrix (all 20 points).
 - [ ] TODO: architecture and ER diagrams updated to implemented code; complete README (stack, env, setup, diagrams, members/roles, AI use).
@@ -70,9 +70,9 @@
 
 ## Current task
 
-**Task:** Publish verified Phase 3 to its remote branch and open a PR against main.
-**Status:** DONE — implementation commit pushed and draft PR #3 created/verified open and unmerged. Phase 3 implementation remains locally verified; Codespaces screen acceptance is pending.
-**Last verified state:** 2026-11-07: base `bedcdc1` matches freshly fetched origin/main; 41 independent + 42 isolated MySQL integration tests PASS. Final Chromium native flows PASS at 1280×900, 390×844 and 320×740 after the flash-notice race correction. Build/schema/whitespace checks pass. Development and test MySQL healthy; synthetic users/companies/sessions cleaned.
+**Task:** Push verified Phase 4 and create its pull request against main.
+**Status:** IN_PROGRESS — explicit owner request received. Implementation remains verified; preparing commit, remote branch and PR.
+**Last verified state:** Phase 4 clean-install build/schema validation, 43 independent + 56 isolated MySQL integration tests and final HTTP/HTTPS-proxy/wss Chromium flows passed in this session. Fresh origin/main remains `2d49858`; no existing remote branch or open PR for `codex/phase-4-realtime`. Actual Codespaces acceptance remains Phase 5.
 
 ## Completed work and evidence
 
@@ -100,15 +100,15 @@ These results describe the previous session. Superseded network/container-state 
 - Historical/resolved Phase 2 origin gate: FWF_FORM_ORIGIN_REJECTED, secure/proxy true, nonopaque mismatching Origin and same-origin metadata. Browser origin and fresh CLI APP_ORIGIN were confirmed equal. A proxy-rewriting reproduction passed after the bounded alternative origin check; the actual remote raw header/process startup snapshot was not captured. The owner subsequently confirmed success.
 - Historical origin/retest blocker resolved by the owner's Codespaces confirmation and PR #2 merge (`bedcdc1`); retained diagnostic details below are history, not current blockers.
 - Historical managed-executor image-extraction disk limit remains recorded. No local devcontainer rebuild success is claimed.
-- Phase 3 has no known blocking local runtime/test failure. Its actual Codespaces forwarded-HTTPS acceptance and full accessibility/contrast audit remain pending; local browser results do not close those gates.
+- Phases 3–4 have no known blocking local runtime/test failure. Its actual Codespaces forwarded-HTTPS acceptance and full accessibility/contrast audit remain pending; local browser results do not close those gates.
 
 ## Next action
 
-Implement Phase 4 session-authenticated Socket.IO on the existing HTTP server:
-company-scoped room/history/events, persistent messages, presence, inventory
-notifications and two-client integration tests. Add chat navigation when functional.
-Publication review: verify Phase 3's forwarded-HTTPS screens in Codespaces through
-draft PR #3 before marking that remote acceptance complete.
+Begin Phase 5: full security/accessibility review, reproducible query/performance
+measurement and academic documentation/rubric evidence. Verify the new screens,
+secure cookies and two distinct users over actual forwarded Codespaces HTTPS/wss.
+PR #3 is already merged; its historical draft status is not a current blocker.
+Phase 4 publication is explicitly requested and in progress; no release tag yet.
 
 ## Historical session change log — initial foundation
 
@@ -357,3 +357,30 @@ Chronological entries below include intermediate states; the current authoritati
   credentials (`could not read Username`) while sending this documentation-only
   follow-up. The publication record is completed through the connected GitHub API;
   no credentials were requested from the owner or printed.
+
+## Phase 4 — current continuation (2026-11-07)
+
+- Remote reconciliation DONE: clean local `work` at `bedcdc1` was behind freshly fetched `origin/main` by the Phase 3 implementation/publication/merge commits. Fast-forwarded to `2d49858` (merged PR #3). Corrected the stale top-level claim that PR #3 was still draft/unmerged; historical entries retain their original context. Read AGENTS/specification/migration plan and inspected relevant source/tests before edits.
+- Runtime restored without assuming historical containers/secrets: private setup, locked dependency installation, build/schema validation, independent tests **41/41 PASS**, isolated real MySQL integration **42/42 PASS**. Existing Phase 3 functionality matches the completed checklist and owner's statement.
+- IN_PROGRESS: added Socket.IO server/client dependencies, shared persistent session middleware, authenticated General room/history/presence, strict event validation, connection/event limits, session revocation rechecks, company inventory notifications and EJS/client UI/navigation.
+- First Phase 4 automated regression: **43 independent + 55 integration = 98 PASS**. Browser then exposed a missing-Origin polling handshake: Chromium omits Origin on same-origin polling GETs. Corrected only this case using browser `Sec-Fetch-Site:same-origin` plus transport=polling; token/session checks remain mandatory and foreign/opaque origins remain rejected. Added regressions and active-transport shutdown coverage; browser and final suites pending rerun.
+
+
+### Phase 4 completion and final evidence
+
+- **IN_PROGRESS → DONE (local implementation and verification).** No database migration required: existing tenant FKs and chat-history index reused. Added Socket.IO 4.8.4 runtime and socket.io-client 4.8.4 test dependencies with lockfile; no SPA, external messaging provider or second process.
+- Final clean installation: `npm ci` **329 packages**, `npm run build` **PASS** (Prisma 7.10.1 + local Tailwind 4.3.5), `npm run db:validate` **PASS**. `npm test` **43/43 PASS** (990ms); `npm run test:db` **56/56 PASS** (20.94s), four integration files. Existing startup/SIGTERM/unavailable-database, auth and business regressions remain green. Test migration deployment reports no pending migrations.
+- New integration coverage: actual clients use the real HTTP server and persistent signed sessions, not simulated sockets. Anonymous/cookie/token/origin rejection, room/cursor/company/identity isolation, two-user live exchange, persistence/reconnect, 105-row stable history, XSS/length/control validation, presence/tabs, polling with browser-like missing Origin, per-user limits, logout/expiry/version revocation, CRUD notifications, simulated persistence failure without disclosure or broadcast, and active socket/server shutdown all pass.
+- Final `node work/phase4-browser.mjs` **PASS** against the production entry and real development MySQL: two same-company people plus a third company, native login, live messages, HTML rendered as inert text, persisted history after reload, live near-expiry notice without reload, company isolation and logout/presence. Viewports **1280×900, 390×844 and 320×740**, local Inter, no horizontal overflow, page errors, CSP violations or external HTTP requests. Desktop/narrow screenshots visually inspected; legacy CSS unchanged.
+- Final `node work/phase4-https-browser.mjs` **PASS** with real Chromium → loopback HTTPS proxy rewriting Origin → HTTP Express/Socket.IO → isolated test MySQL. Same three-user flow passes; **Secure/HttpOnly cookies and wss upgrade observed**, no CSP/page/external-request errors. The disposable self-signed certificate is trusted only by the local test browser context; no global TLS verification was disabled. Harnesses/certificates/screenshots remain ignored in work/. This is local proxy evidence, not a remote Codespaces result.
+- `npm audit --omit=dev --audit-level=high`: **0 vulnerabilities reported** at check time; not a blanket security guarantee. `git diff --check` passes. README and auth/data-model/business/migration docs updated; REALTIME.md explains protocol, origin handling, revocation, history, limits, shutdown and demonstration steps.
+- Final targeted DB checks: development/test contain **0 temporary users/companies and 0 sessions**; development retains **1 demo company**, test **0**. An anonymous redirect session missed by the first new regression was identified by that run's narrow expiry interval and removed; the fixture now explicitly tracks it. No development reset or original SQL executed. Both Compose MySQL containers are healthy.
+- Final fresh fetch confirms committed HEAD = origin/main = `2d49858` with ahead/behind **0/0**. All new code/tests/docs remain local and uncommitted. No push, PR creation, merge, deployment or release tag performed. Actual forwarded Codespaces HTTPS/wss acceptance, performance, complete accessibility/security review and academic delivery remain Phase 5.
+
+
+## Phase 4 publication — 2026-11-07
+
+- Explicit owner request: push Phase 4 and open a PR against the remote. **IN_PROGRESS**.
+- Fresh fetch confirms `origin/main` at `2d49858`, the verified implementation base. Local branch `codex/phase-4-realtime` created; no existing remote branch or open PR with that head found. Repository default branch is main.
+- The 99-test/build/schema/browser evidence immediately above belongs to this session and unchanged runtime source. Publication changes documentation only; no repeated test result is invented.
+- Preparing a draft PR with the implemented chat/history/presence/notifications, security/tenant tests and bounded local HTTPS/wss evidence. Actual forwarded Codespaces acceptance remains explicitly pending. No merge or release requested.

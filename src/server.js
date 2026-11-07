@@ -3,6 +3,7 @@ import { createServer } from 'node:http';
 import { createApp } from './app.js';
 import { parseEnv } from './config/env.js';
 import { createDatabase, checkDatabase } from './config/database.js';
+import { attachRealtime } from './modules/chat/chat.socket.js';
 
 let database;
 try {
@@ -11,6 +12,7 @@ try {
   await checkDatabase(database);
   const app = createApp({ config, database, checkDatabase: () => checkDatabase(database) });
   const server = createServer(app);
+  const realtime = attachRealtime(server, { app, database, config });
   server.on('error', async () => {
     console.error('HTTP server failed. Check HOST/PORT and port availability.');
     await database.$disconnect();
@@ -25,7 +27,7 @@ try {
     if (stopping) return;
     stopping = true;
     const timeout = setTimeout(() => process.exit(1), 10000).unref();
-    server.close(async () => {
+    realtime.close(async () => {
       await database.$disconnect();
       clearTimeout(timeout);
     });
