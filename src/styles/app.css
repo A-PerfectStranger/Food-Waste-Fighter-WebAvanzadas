@@ -56,3 +56,8 @@
   .page-transition { animation: none; }
   .btn-primary { transition: none; }
 }
+
+/* WCAG text contrast: use the existing green 700 for normal text/actions.
+   Keep green 600 on large brand lettering and decorative elements. */
+:is(a, button).bg-green-600, .btn-primary, .step-number { background-color: #15803d; }
+.text-green-600:not(.text-xl):not(.text-2xl):not(.text-3xl) { color: #15803d; }
