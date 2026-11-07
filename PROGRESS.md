@@ -70,7 +70,7 @@
 ## Current task
 
 **Task:** Correct the origin gate for same-origin browser forms through the trusted HTTPS proxy.
-**Status:** Implementation/verification DONE; publication to existing PR #2 in progress. Actual Codespaces retest pending; no merge.
+**Status:** Implementation, verification and publication DONE. Correction commit `d31f6d7` was pushed to the existing draft PR #2. Actual Codespaces retest pending; no merge.
 **Files:** CSRF middleware, startup public-origin banner, auth integration tests, README/AUTHENTICATION.md and this log.
 **Last verified state:** `npm test`18/18 and `npm run test:db`27/27 PASS (45 total; integration15.77s). Chrome HTTPS fixtures pass native login, registration, protected account, Secure/HttpOnly cookie, logout and anonymous redirect for both Origin rewriting and missing Fetch Metadata.
 
@@ -223,3 +223,5 @@ Chronological entries below include intermediate states; the current authoritati
 
 - Final verification: `npm test`18/18 PASS; `npm run test:db`27/27 PASS (15.77s); rewritten-Origin HTTPS Chrome fixture PASS for login/logout/registration, protected account and Secure/HttpOnly cookie; metadata-omitted fixture also PASS for the same native flows. `git diff --check` PASS. Existing wrong-origin/direct, cross-site, CSRF, credential, tenant, persistence and reset tests remain green.
 - The project-owner console Permissions-Policy notices are browser warnings, independent of the server's diagnosed403 origin gate. They were not treated as authentication failure evidence.
+
+- Publication: commit `d31f6d7` pushed successfully to `codex/phase-2-authentication`; PR #2 description updated in impersonal Spanish with45-test/native-browser evidence, exact bounded proxy rule and pending remote retest. This follow-up records publication; runtime code is unchanged.
